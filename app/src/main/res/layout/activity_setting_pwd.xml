@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/action_bar" />
+
+    <include layout="@layout/common_horizontal_line_taodian" />
+
+    <com.hmkj.taozhifu.view.emoji.NOPasteEditText
+        android:id="@+id/mPwd"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp42"
+        android:layout_marginLeft="@dimen/dp21.5"
+        android:layout_marginRight="@dimen/dp21.5"
+        android:layout_marginTop="@dimen/dp15"
+        android:background="@color/white"
+        android:digits="@string/pwd_geshi"
+        android:drawableLeft="@drawable/ico_password_login"
+        android:drawablePadding="@dimen/sp17"
+        android:hint="@string/setting_pwd"
+        android:inputType="textPassword"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:textColor="@color/j_cccccc"
+        android:textSize="@dimen/sp14" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp0.5"
+        android:layout_marginLeft="@dimen/dp21.5"
+        android:layout_marginRight="@dimen/dp21.5"
+        android:background="@color/e6e6e6" />
+
+    <com.hmkj.taozhifu.view.emoji.NOPasteEditText
+        android:id="@+id/mPwds"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp42"
+        android:layout_marginLeft="@dimen/dp21.5"
+        android:layout_marginRight="@dimen/dp21.5"
+        android:layout_marginTop="@dimen/dp15"
+        android:background="@color/white"
+        android:digits="@string/pwd_geshi"
+        android:drawableLeft="@drawable/ico_password_confirm"
+        android:drawablePadding="@dimen/sp17"
+        android:hint="@string/setting_pwds"
+        android:inputType="textPassword"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:textColor="@color/j_cccccc"
+        android:textSize="@dimen/sp14" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp0.5"
+        android:layout_marginLeft="@dimen/dp21.5"
+        android:layout_marginRight="@dimen/dp21.5"
+        android:background="@color/e6e6e6" />
+
+    <Button
+        android:id="@+id/mRegist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp21.5"
+        android:layout_marginRight="@dimen/dp21.5"
+        android:layout_marginTop="@dimen/dp30"
+        android:background="@drawable/btn_login_bg"
+        android:text="@string/tv_complete"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp15" />
+
+</LinearLayout>

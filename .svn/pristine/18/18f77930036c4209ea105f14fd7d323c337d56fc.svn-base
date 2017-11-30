@@ -1,0 +1,820 @@
+package com.hmkj.taozhifu.activity;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.alibaba.sdk.android.oss.ClientException;
+import com.alibaba.sdk.android.oss.ServiceException;
+import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;
+import com.alibaba.sdk.android.oss.callback.OSSProgressCallback;
+import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;
+import com.alibaba.sdk.android.oss.model.DeleteObjectRequest;
+import com.alibaba.sdk.android.oss.model.DeleteObjectResult;
+import com.alibaba.sdk.android.oss.model.PutObjectRequest;
+import com.alibaba.sdk.android.oss.model.PutObjectResult;
+import com.baidu.location.LocationClient;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeOption;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.hmkj.taozhifu.MyApp;
+import com.hmkj.taozhifu.R;
+import com.hmkj.taozhifu.adapter.CustomTextAdapter;
+import com.hmkj.taozhifu.adapter.DialogMyStoreServiceAdapter;
+import com.hmkj.taozhifu.adapter.GridViewDeleteClickAdapter;
+import com.hmkj.taozhifu.base.BaseActivity;
+import com.hmkj.taozhifu.bean.AddressBeans;
+import com.hmkj.taozhifu.bean.CustomTimeBean;
+import com.hmkj.taozhifu.bean.MyStoreBean;
+import com.hmkj.taozhifu.bean.MyStoreServiceBean;
+import com.hmkj.taozhifu.http.HttpConfig;
+import com.hmkj.taozhifu.myInterface.CommonStatu;
+import com.hmkj.taozhifu.myListener.LocationService;
+import com.hmkj.taozhifu.utils.AppUtils;
+import com.hmkj.taozhifu.utils.CommonUtil;
+import com.hmkj.taozhifu.utils.GlideUtils;
+import com.hmkj.taozhifu.utils.GsonUtil;
+import com.hmkj.taozhifu.utils.ImgCompressUtil;
+import com.hmkj.taozhifu.utils.LogUtil;
+import com.hmkj.taozhifu.utils.StatusBarUtil;
+import com.hmkj.taozhifu.utils.ToastUtil;
+import com.hmkj.taozhifu.view.MyOneTextDialog;
+import com.hmkj.taozhifu.view.NoScrollGridView;
+import com.hmkj.taozhifu.view.emoji.NOPasteEditText;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.HttpParams;
+import com.lzy.okgo.model.Response;
+import com.lzy.okgo.request.base.Request;
+import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.AlbumFile;
+import com.yanzhenjie.album.AlbumListener;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static com.hmkj.taozhifu.MyApp.oss;
+import static com.hmkj.taozhifu.MyApp.testBucket;
+
+public class MyStoreSetupActivity extends BaseActivity implements GridViewDeleteClickAdapter.OnRecyclerViewItemClickListener, OnGetGeoCoderResultListener, MyOneTextDialog.DLonItemClickListener {
+
+    @BindView(R.id.toolbar_title)
+    TextView toolbarTitle;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.view)
+    View view;
+    @BindView(R.id.et_store_name)
+    NOPasteEditText etStoreName;
+    @BindView(R.id.iv_delete_store_name)
+    ImageView ivDeleteStoreName;
+    @BindView(R.id.et_store_phone)
+    NOPasteEditText etStorePhone;
+    @BindView(R.id.et_store_address)
+    NOPasteEditText etStoreAddress;
+    @BindView(R.id.tv_address1)
+    TextView tvAddress1;
+    @BindView(R.id.tv_address2)
+    TextView tvAddress2;
+    @BindView(R.id.tv_address3)
+    TextView tvAddress3;
+    @BindView(R.id.tv_business_time)
+    TextView tvBusinessTime;
+    @BindView(R.id.et_store_consume)
+    NOPasteEditText etStoreConsume;
+    @BindView(R.id.et_product_des)
+    NOPasteEditText etProductDes;
+    @BindView(R.id.tv_store_serve)
+    TextView tvStoreServe;
+    @BindView(R.id.rl_select_product_main_img)
+    RelativeLayout rlSelectProductMainImg;
+    @BindView(R.id.rl_select_shop_main_img)
+    RelativeLayout rlSelectShopMainImg;
+    @BindView(R.id.iv_product_main_img)
+    ImageView ivProductMainImg;
+    @BindView(R.id.iv_select_pic)
+    ImageView ivSelectPic;
+    @BindView(R.id.gv_grid_view)
+    NoScrollGridView gvGridView;
+    @BindView(R.id.tv_publish)
+    TextView tvPublish;
+    ArrayList<AlbumFile> mainImgList = new ArrayList<>(); // 选择的门牌照，就一张
+    ArrayList<AlbumFile> imgList = new ArrayList<>();
+    String mainImgPath = ""; //主图只有一张，需要单独传，记录下来
+    GridViewDeleteClickAdapter gridViewDeleteClickAdapter;
+    private Dialog dialog;
+    private RecyclerView rvStartTime;
+    private RecyclerView rvEndTime;
+    private CustomTextAdapter customTextAdapter;
+    Long shopId;
+    private MyStoreBean.DataBean dataBean;
+    GeoCoder mSearch = null; // 百度定位搜索模块，也独立使用
+    public LocationClient mLocationClient = null;
+    double longitude = 0.0;//经度
+    double latitude = 0.0;//纬度
+
+    //修改 记录下 有主图和环境图的情况
+    int MARK;
+    int Mark_Main_Img;
+    /**
+     * 输入框小数的位数
+     */
+    private static final int DECIMAL_DIGITS = 2;
+    AddressBeans addressBeans = GsonUtil.GsonToBean(getJson(MyApp.mContext, "province.json"), AddressBeans.class);
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_store_setup);
+        ButterKnife.bind(this);
+        /**
+         *  设置小数位数控制
+         */
+        InputFilter lengthfilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                // 删除等特殊字符，直接返回
+                if ("".equals(source.toString())) {
+                    return null;
+                }
+                String dValue = dest.toString();
+                String[] splitArray = dValue.split("\\.");
+                if (splitArray.length > 1) {
+                    String dotValue = splitArray[1];
+                    int diff = dotValue.length() + 1 - DECIMAL_DIGITS;
+                    if (diff > 0) {
+                        return source.subSequence(start, end - diff);
+                    }
+                }
+                return null;
+            }
+        };
+        // 控制输入框的小数位和长度,这里长度暂时设置为10
+        etStoreConsume.setFilters(new InputFilter[]{lengthfilter, new InputFilter.LengthFilter(10)});
+    }
+
+    @Override
+    public void initData() {
+        // 定位初始化
+        mLocationClient = new LocationClient(this);
+        mLocationClient.setLocOption(new LocationService(this).getDefaultLocationClientOption());
+//        //注册监听函数
+//        mLocationClient.registerLocationListener(new MyLocationListener());
+        mLocationClient.start();
+        mSearch = GeoCoder.newInstance();
+        mSearch.setOnGetGeoCodeResultListener(MyStoreSetupActivity.this);
+        //玛德要什么经纬度,根据输入位置进行定位
+        etStoreAddress.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchLoc(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        shopId = getIntent().getLongExtra("shopId", 0l);
+        dataBean = (MyStoreBean.DataBean) getIntent().getBundleExtra("bundle").getSerializable("myStoreBean");
+        if (shopId != 0l && dataBean != null)
+            setData(dataBean);
+    }
+
+    /**
+     * 发起地址搜索
+     */
+    public void searchLoc(String s) {
+        LogUtil.LogLong("地址 -- " + s);
+        // Geo搜索
+        if (AppUtils.checkId(s))
+        {
+            mSearch.geocode(new GeoCodeOption().city("").address(s));
+        }
+    }
+
+    private void setData(MyStoreBean.DataBean dataBean) {
+        etStoreName.setText(dataBean.shopName);
+        etStorePhone.setText(dataBean.shopPhone);
+        etStoreAddress.setText(dataBean.shopAddress);
+        etStoreConsume.setText(dataBean.avgSpend + "");
+        if (AppUtils.checkId(dataBean.businessStartTime) && AppUtils.checkId(dataBean.businessStopTime)) {
+            tvBusinessTime.setText(dataBean.businessStartTime + "-" + dataBean.businessStopTime);
+            START_TIME = dataBean.businessStartTime;
+            END_TIME = dataBean.businessStopTime;
+        }
+        if (AppUtils.checkId(dataBean.shopIntroduce))
+        {
+            etProductDes.setText(dataBean.shopIntroduce);
+        }
+        if (dataBean.shopEnvironmentImgs != null && dataBean.shopEnvironmentImgs.size() > 0) {
+            ArrayList<AlbumFile> carouselFigureList = new ArrayList<>();
+            for (String imgListBean : dataBean.shopEnvironmentImgs) {
+                AlbumFile albumFile = new AlbumFile();
+                albumFile.setPath(imgListBean);
+                carouselFigureList.add(albumFile);
+//                upSuccessImgs.add(imgListBean);//编辑，有图的情况先记录不用避免重新上传
+            }
+            //千万不需要记录
+//            environmentListSize = carouselFigureList.size();
+            //保持之前的集合不变
+            gridViewDeleteClickAdapter.setData(imgList = carouselFigureList);
+            MARK = 1; // 有图片的话先做一个标识,不用上传
+        }
+        if (AppUtils.checkId(dataBean.shopSignage)) {
+            GlideUtils.loadImage(this, dataBean.shopSignage, ivProductMainImg, CommonUtil.getDrawable(R.drawable.img_upload));
+            mainImgPath = dataBean.shopSignage;
+            mainImgListSize = 1;
+            Mark_Main_Img = 1;
+        }
+    }
+
+    @Override
+    public void initView() {
+        initToolbar();
+        gridViewDeleteClickAdapter = new GridViewDeleteClickAdapter(this, imgList);
+        gridViewDeleteClickAdapter.setOnItemClickListener(this);
+        gvGridView.setAdapter(gridViewDeleteClickAdapter);
+        getPersimmions();
+    }
+
+    private void initToolbar() {
+        initToolBar(toolbar, true, false, "", Color.BLACK, R.drawable.ic_arrow_back_dark_24dp);
+        toolbarTitle.setText("店铺设置");
+        toolbarTitle.setTextColor(Color.BLACK);
+        toolbar.setBackgroundColor(Color.WHITE);
+        StatusBarUtil.darkMode(this);
+        StatusBarUtil.setPaddingSmart(this, toolbar);
+    }
+
+    int type;
+
+    @OnClick({R.id.tv_address1, R.id.tv_address2, R.id.tv_address3, R.id.rl_select_shop_main_img, R.id.rl_select_product_main_img, R.id.iv_delete_store_name, R.id.tv_publish, R.id.iv_select_pic, R.id.tv_business_time})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.iv_delete_store_name:
+                etStoreName.setText("");
+                break;
+            case R.id.tv_address1:
+                type = 1;
+                if (addressBeans != null && addressBeans.address != null && addressBeans.address.size() > 0) {
+                    ArrayList<String> data = new ArrayList<>();
+                    for (AddressBeans.AddressBean addres : addressBeans.address) {
+                        data.add(addres.name);
+                    }
+                    new MyOneTextDialog(this, data, this);
+                }
+                break;
+            case R.id.tv_address2:
+                type = 2;
+                ArrayList<String> data2 = new ArrayList<>();
+                for (AddressBeans.AddressBean addres : addressBeans.address) {
+                    if (TextUtils.equals(addres.name, getText(tvAddress1))) {
+                        for (AddressBeans.AddressBean.CityBean cityBean : addres.city) {
+                            data2.add(cityBean.name);
+                        }
+                        new MyOneTextDialog(this, data2, this);
+                    }
+                }
+                break;
+            case R.id.tv_address3:
+                type = 3;
+                for (AddressBeans.AddressBean addres : addressBeans.address) {
+                    if (TextUtils.equals(addres.name, getText(tvAddress1))) {
+                        for (AddressBeans.AddressBean.CityBean cityBean : addres.city) {
+                            if (TextUtils.equals(cityBean.name, getText(tvAddress2)))
+                            {
+                                new MyOneTextDialog(this, cityBean.area, this);
+                            }
+                        }
+                    }
+                }
+                break;
+            case R.id.tv_business_time:
+                showCustomDialog();
+                break;
+            case R.id.rl_select_product_main_img:
+                showMultiChoiceDialog();
+                break;
+            case R.id.rl_select_shop_main_img:
+                selectMainPic();
+                break;
+            case R.id.iv_select_pic:
+                selectPic();
+                break;
+            case R.id.tv_publish:
+                if (AppUtils.isFastClick()) {
+                    check();
+                }
+                break;
+                default:
+                    break;
+        }
+    }
+
+    private void check() {
+        if (!isNetConnect()) {
+            return;
+        }
+        if (AppUtils.checkId(etStoreAddress.getText().toString().trim()) && (longitude == 0.0d || latitude == 0.0d)) {
+            ToastUtil.showToast("定位失败,请输入正确店铺地址");
+            return;
+        }
+//        if (MARK == 1 || imgList.size() == 0) publish();
+        uploadImg();
+    }
+
+    int mainImgListSize = 0;  // 记录选中主图几张
+    int environmentListSize = 0;    //  记录选中的商户环境图几张
+    int uploadSize = 0; //记录上传aliyun 几张
+    ArrayList<String> upSuccessImgs = new ArrayList<>(); //记录aliyun 上传成功图片路径
+    ArrayList<String> names; // 记录选中的图片重新给的名字
+
+    private void uploadImg() {
+        show(false, false);
+        tvPublish.setClickable(false);
+        uploadSize = 0;
+        names = new ArrayList<>();
+        upSuccessImgs.clear();
+        //店铺图
+        if (Mark_Main_Img == 2) {
+            String mainImgName = System.currentTimeMillis() + "main";
+            names.add(mainImgName);
+            beginupload(mainImgName, CommonUtil.bitmap2Bytes(ImgCompressUtil.getimage(mainImgPath)));
+        }
+        //环境图
+        if (MARK != 1 ) {
+            for (AlbumFile albumFile : imgList) {
+                String name = System.currentTimeMillis() + "";
+                if (!names.contains(name))
+                {
+                    names.add(name);
+                }
+                beginupload(name, CommonUtil.bitmap2Bytes(ImgCompressUtil.getimage(albumFile.getPath())));
+            }
+        }
+        if (Mark_Main_Img == 1 && (MARK == 1 || imgList.size() == 0)) {
+            publish();
+        }
+    }
+
+    public void beginupload(final String name, byte[] bytes) {
+        // 构造上传请求
+        PutObjectRequest put = new PutObjectRequest(testBucket, "appdata/" + name + ".png", bytes);
+
+        // 异步上传时可以设置进度回调
+        put.setProgressCallback(new OSSProgressCallback<PutObjectRequest>() {
+            @Override
+            public void onProgress(PutObjectRequest request, long currentSize, long totalSize) {
+                Log.e("PutObject", "currentSize: " + currentSize + " totalSize: " + totalSize);
+            }
+        });
+
+        OSSAsyncTask task = oss.asyncPutObject(put, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
+            @Override
+            public void onSuccess(PutObjectRequest request, PutObjectResult result) {
+                uploadSize = uploadSize + 1;
+                Log.e("PutObject", "UploadSuccess");
+                Log.e("ETag", result.getETag());
+                Log.e("getStatusCode", result.getStatusCode() + "");
+                Log.e("RequestId", result.getRequestId());
+                if (!upSuccessImgs.contains(oss.presignPublicObjectURL(testBucket, "appdata/" + name + ".png")))
+                {
+                    upSuccessImgs.add(oss.presignPublicObjectURL(testBucket, "appdata/" + name + ".png"));
+                }
+                LogUtil.LogLong("ali_path -- " + oss.presignPublicObjectURL(testBucket, "appdata/" + name + ".png"));
+
+                checkImg();
+            }
+
+            @Override
+            public void onFailure(PutObjectRequest request, ClientException clientExcepion, ServiceException serviceException) {
+                uploadSize = uploadSize + 1;
+                // 请求异常
+                if (clientExcepion != null) {
+                    // 本地异常如网络异常等
+                    clientExcepion.printStackTrace();
+                }
+                if (serviceException != null) {
+                    // 服务异常
+                    Log.e("ErrorCode", serviceException.getErrorCode());
+                    Log.e("RequestId", serviceException.getRequestId());
+                    Log.e("HostId", serviceException.getHostId());
+                    Log.e("RawMessage", serviceException.getRawMessage());
+                }
+                checkImg();
+            }
+        });
+    }
+
+    private void checkImg() {
+        LogUtil.LogLong(environmentListSize + mainImgListSize + "  --  " + uploadSize);
+        if (environmentListSize + (Mark_Main_Img == 2 ? mainImgListSize : 0) > uploadSize) {
+            ToastUtil.showToast("--- 请等待图片上传 ---");
+            return;
+        }
+        diss();
+        publish();
+    }
+
+    private void publish() {
+        if(TextUtils.isEmpty(etProductDes.getText().toString())){
+            ToastUtil.showToast("请填写店铺介绍!");
+            return ;
+        }
+        OkGo.<String>put(HttpConfig.proShop).params(addParams())
+                .execute(new StringCallback() {
+                    @Override
+                    public void onStart(Request<String, ? extends Request> request) {
+                        super.onStart(request);
+                        tvPublish.setClickable(true);
+                        show(false, false);
+                        LogUtil.LogLong("StringCallback - onStart");
+                    }
+
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        LogUtil.LogLong("店铺设置 -- " + response.body());
+                        if (checkHttpCode(response.body())) {
+                            setResult(CommonStatu.OK);
+                            ToastUtil.showToast("设置成功");
+                            MyStoreSetupActivity.this.finish();
+                        } else {
+                            deleteAliImgs();
+                            ToastUtil.showToast(getHttpMsg(response.body()));
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        LogUtil.LogLong("onError -- " + response.body());
+                        deleteAliImgs();
+                        ToastUtil.showToast(getHttpMsg(response.body()));
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        super.onFinish();
+                        diss();
+                    }
+                });
+    }
+
+    private HttpParams addParams() {
+        HttpParams params = new HttpParams();
+        params.put("shopId", shopId);
+        if (AppUtils.checkId(getText(etStoreAddress)) && longitude != 0 && latitude != 0) {
+            params.put("shopAddress", AppUtils.checkId(getText(tvAddress3)) ? getText(tvAddress1) + getText(tvAddress2) + getText(tvAddress3) + getText(etStoreAddress) : getText(etStoreAddress));
+            params.put("longitude", longitude);
+            params.put("latitude", latitude);
+        }
+        if (AppUtils.checkId(getText(etStoreName)))
+        {
+            params.put("shopName", getText(etStoreName));
+        }
+        if (AppUtils.checkId(getText(etStorePhone)))
+        {
+            params.put("shopPhone", getText(etStorePhone));
+        }
+        if (AppUtils.checkId(getText(tvBusinessTime))) {
+            params.put("businessStartTime", START_TIME);
+            params.put("businessStopTime", END_TIME);
+        }
+        if (AppUtils.checkId(getText(etStoreConsume)))
+        {
+            params.put("avgSpend", Double.valueOf(getText(etStoreConsume)));
+        }
+        if (AppUtils.checkId(getText(etProductDes)))
+        {
+            params.put("shopIntroduce", getText(etProductDes));
+        }
+
+        if (AppUtils.checkId(getText(tvStoreServe)))
+        {
+            params.put("shopServices", getText(tvStoreServe));
+        }
+        String mainImgPath = "";
+        StringBuilder shopEnvironmentImg = new StringBuilder();
+        for (String upSuccessImg : upSuccessImgs) {
+            if (upSuccessImg.endsWith("main.png")) {
+                mainImgPath = upSuccessImg;
+            }
+            else {
+                shopEnvironmentImg.append(upSuccessImg + ",");
+            }
+        }
+        if (AppUtils.checkId(mainImgPath)) {
+            params.put("shopSignage", mainImgPath);
+        }
+        if (AppUtils.checkId(shopEnvironmentImg.toString()))
+        {
+            params.put("shopEnvironmentImg", shopEnvironmentImg.substring(0, shopEnvironmentImg.length() - 1));
+        }
+        LogUtil.LogLong("要传的参数 -- " + params.toString());
+        return params;
+    }
+
+    private void deleteAliImgs() {
+        if (names == null || names.size() == 0) {
+            return;
+        }
+        for (String name : names) {
+            deleUpImg(name);
+        }
+    }
+
+    private void deleUpImg(String name) {//如果上传图片到阿里云成功而本地失败
+        LogUtil.LogLong(" -- 删除图片进来了 -- ");
+        // 创建删除请求
+        DeleteObjectRequest delete = new DeleteObjectRequest(testBucket, "appdata/" + name + ".png");
+        // 异步删除
+        OSSAsyncTask deleteTask = oss.asyncDeleteObject(delete, new OSSCompletedCallback<DeleteObjectRequest, DeleteObjectResult>() {
+            @Override
+            public void onSuccess(DeleteObjectRequest request, DeleteObjectResult result) {
+                LogUtil.LogLong(" -- 删除图片成功-- ");
+            }
+
+            @Override
+            public void onFailure(DeleteObjectRequest request, ClientException clientExcepion, ServiceException serviceException) {
+                LogUtil.LogLong(" -- 删除图片失败 -- ");
+                // 请求异常
+                if (clientExcepion != null) {
+                    // 本地异常如网络异常等
+                    clientExcepion.printStackTrace();
+                }
+                if (serviceException != null) {
+                    // 服务异常
+                    Log.e("ErrorCode", serviceException.getErrorCode());
+                    Log.e("RequestId", serviceException.getRequestId());
+                    Log.e("HostId", serviceException.getHostId());
+                    Log.e("RawMessage", serviceException.getRawMessage());
+                }
+            }
+
+        });
+    }
+
+    private void showCustomDialog() {
+        dialog = new Dialog(this, R.style.ActionSheetDialogStyle);
+        //填充对话框的布局
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_store_custom, null);
+        //初始化控件
+        rvStartTime = (RecyclerView) view.findViewById(R.id.rv_start_time);
+        rvEndTime = (RecyclerView) view.findViewById(R.id.rv_end_time);
+        setRecycAdapter(rvStartTime);
+        setRecycAdapter(rvEndTime);
+        //将布局设置给Dialog
+        dialog.setContentView(view);
+        //获取当前Activity所在的窗体
+        Window dialogWindow = dialog.getWindow();
+        //设置Dialog从窗体底部弹出
+        dialogWindow.setGravity(Gravity.BOTTOM);
+        //获得窗体的属性
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        lp.height = AppUtils.getScreenHW(this)[1] / 2;
+        lp.width = AppUtils.getScreenHW(this)[0];
+//        lp.y = 10;//设置Dialog距离底部的距离
+        //将属性设置给窗体
+        dialogWindow.setAttributes(lp);
+        dialog.show();//显示对话框
+    }
+
+    String START_TIME = "";
+    String END_TIME = "";
+
+    private void setRecycAdapter(final RecyclerView recyclerView) {
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        customTextAdapter = new CustomTextAdapter(new CustomTimeBean().time);
+        customTextAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                switch (recyclerView.getId()) {
+                    case R.id.rv_start_time:
+                        ToastUtil.showToast("开始时间：" + ((TextView) view).getText().toString());
+                        START_TIME = ((TextView) view).getText().toString();
+                        break;
+                    case R.id.rv_end_time:
+                        ToastUtil.showToast("结束时间：" + ((TextView) view).getText().toString());
+                        END_TIME = ((TextView) view).getText().toString();
+                        break;
+                }
+                if (AppUtils.checkId(START_TIME) && AppUtils.checkId(END_TIME)) {
+                    tvBusinessTime.setText(START_TIME + "-" + END_TIME);
+                    dialog.dismiss();
+                }
+            }
+        });
+        recyclerView.setAdapter(customTextAdapter);
+    }
+
+    private void selectMainPic() {
+        Album.image(this) // 选择图片。
+                .multipleChoice()
+                .requestCode(200)
+                .camera(true)
+                .columnCount(3)
+                .selectCount(1)
+                .checkedList(mainImgList)
+                .listener(new AlbumListener<ArrayList<AlbumFile>>() {
+                    @Override
+                    public void onAlbumResult(int requestCode, @NonNull ArrayList<AlbumFile> result) {
+                        if (result != null && result.size() > 0) {
+//                            Glide.with(MyStoreSetupActivity.this).load(result.get(0).getPath()).crossFade().into(ivProductMainImg);
+                            GlideUtils.loadImage(MyStoreSetupActivity.this, result.get(0).getPath(), ivProductMainImg);
+                            mainImgListSize = result.size();
+                            mainImgPath = result.get(0).getPath();
+                            Mark_Main_Img = 2;
+                        }
+                    }
+
+                    @Override
+                    public void onAlbumCancel(int requestCode) {
+
+                    }
+                })
+                .start();
+    }
+
+    private void selectPic() {
+        Album.image(this) // 选择图片。
+                .multipleChoice()
+                .requestCode(200)
+                .camera(true)
+                .columnCount(3)
+                .selectCount(5)
+                .checkedList(imgList)
+                .listener(new AlbumListener<ArrayList<AlbumFile>>() {
+                    @Override
+                    public void onAlbumResult(int requestCode, @NonNull ArrayList<AlbumFile> result) {
+                        if (result != null && result.size() > 0) {
+                            gridViewDeleteClickAdapter.setData(imgList = result);
+                            environmentListSize = result.size();
+                            MARK = 2;
+                        }
+                    }
+
+                    @Override
+                    public void onAlbumCancel(int requestCode) {
+
+                    }
+                })
+                .start();
+    }
+
+    /**
+     * 删除图片
+     *
+     * @param view
+     * @param position
+     */
+    @Override
+    public void onItemClick(View view, int position) {
+        imgList.remove(position);
+        gridViewDeleteClickAdapter.setData(imgList);
+        environmentListSize = imgList.size();//删除了图片,重新计数
+        if (upSuccessImgs != null) upSuccessImgs.clear();
+    }
+
+    final List<MyStoreServiceBean.DataBean> data = new MyStoreServiceBean().data;
+    String checked = "";
+
+    private void showMultiChoiceDialog() {
+        final Dialog dialog = new Dialog(this);
+        View view = View.inflate(this, R.layout.dialog_my_store_service, null);
+        view.findViewById(R.id.tv_cancle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new DialogMyStoreServiceAdapter(data, this));
+        view.findViewById(R.id.tv_confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checked = "";
+                for (MyStoreServiceBean.DataBean dataBean : data) {
+                    if (dataBean.isCheck) checked += dataBean.name + ",";
+                }
+                if (AppUtils.checkId(checked))
+                    tvStoreServe.setText(checked.substring(0, checked.length() - 1));
+                else {
+                    tvStoreServe.setText(null);
+                    tvStoreServe.setHint("请选择");
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog.setContentView(view);
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.width = AppUtils.getScreenHW(this)[0] / 7 * 6;
+        lp.height = AppUtils.getScreenHW(this)[1] / 3 * 2;
+        window.setAttributes(lp);
+        dialog.show();
+    }
+
+    /**
+     * 根据输入位置进行定位,返回结果
+     *
+     * @param result
+     */
+    @Override
+    public void onGetGeoCodeResult(GeoCodeResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            LogUtil.LogLong("抱歉，未能成功定位");
+            return;
+        }
+        longitude = result.getLocation().longitude;
+        latitude = result.getLocation().latitude;
+        LogUtil.LogLong("longitude - " + longitude + " -- longitude - " + latitude);
+    }
+
+    @Override
+    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        mLocationClient.stop();
+        super.onDestroy();
+    }
+
+    public String getJson(Context context, String fileName) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            AssetManager assetManager = context.getAssets();
+            BufferedReader bf = new BufferedReader(new InputStreamReader(
+                    assetManager.open(fileName)));
+            String line;
+            while ((line = bf.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public void DLonItemClick(BaseQuickAdapter adapter, View view, int position) {
+        if (type == 1) {
+            tvAddress1.setText(getText((TextView) view));
+            tvAddress2.setText(null);
+            tvAddress2.setHint("请选择市");
+            tvAddress3.setText(null);
+            tvAddress3.setHint("请选择区");
+        } else if (type == 2) {
+            tvAddress2.setText(getText((TextView) view));
+            tvAddress3.setText(null);
+            tvAddress3.setHint("请选择区");
+        } else if (type == 3) {
+            tvAddress3.setText(getText((TextView) view));
+            searchLoc(getText(tvAddress1) + getText(tvAddress2) + getText(tvAddress3) + getText(etStoreAddress));
+        }
+    }
+}

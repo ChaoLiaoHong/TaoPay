@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/easy4_gray"
+    android:orientation="vertical">
+
+    <include layout="@layout/fragment_home_title" />
+
+    <com.hmkj.taozhifu.view.SwipeRefreshView
+        android:id="@+id/refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <com.bigkoo.convenientbanner.ConvenientBanner
+                    android:id="@+id/convenientBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    app:canLoop="true" />
+
+                <com.hmkj.taozhifu.view.NoScrollGridView
+                    android:id="@+id/category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:horizontalSpacing="@dimen/dp5"
+                    android:numColumns="5"
+                    android:padding="@dimen/dp10"
+                    android:scrollbars="none"
+                    android:verticalSpacing="@dimen/dp5" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp10"
+                    android:background="@color/easy4_gray" />
+
+                <RelativeLayout
+                    android:id="@+id/ll_notice"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp45"
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:id="@+id/iv_notice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dp11"
+                        android:src="@drawable/ico_notice_home" />
+
+                    <View
+                        android:id="@+id/view1"
+                        android:layout_width="@dimen/dp0.5"
+                        android:layout_height="@dimen/dp15"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dp10"
+                        android:layout_toRightOf="@id/iv_notice"
+                        android:background="@color/easy3_gray" />
+
+                    <TextView
+                        android:id="@+id/tv_notice_more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/dp12"
+                        android:text="更多" />
+
+                    <View
+                        android:id="@+id/view2"
+                        android:layout_width="@dimen/dp0.5"
+                        android:layout_height="@dimen/dp15"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/dp10"
+                        android:layout_toLeftOf="@id/tv_notice_more"
+                        android:background="@color/easy3_gray" />
+
+                    <com.hmkj.taozhifu.view.UpDownTextView
+                        android:id="@+id/tv_notice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/dp10"
+                        android:layout_marginRight="@dimen/dp10"
+                        android:layout_toLeftOf="@id/view2"
+                        android:layout_toRightOf="@id/view1"
+                        android:ellipsize="end"
+                        android:lines="1" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp8"
+                    android:background="@color/easy4_gray" />
+
+                <LinearLayout
+                    android:id="@+id/ll_recommended_products"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp30"
+                        android:background="@color/transparent">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp30"
+                            android:layout_marginTop="@dimen/dp5"
+                            android:background="@color/white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/dp12"
+                            android:background="@drawable/bg_recommend_home"
+                            android:gravity="center"
+                            android:text="推荐商品"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/sp11" />
+                    </FrameLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_recommended_products"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:paddingBottom="@dimen/dp10"
+                        android:paddingLeft="@dimen/dp10" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp8"
+                        android:background="@color/easy4_gray" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_nearby_merchants"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/dp10"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp30"
+                        android:background="@color/transparent">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp30"
+                            android:layout_marginTop="@dimen/dp5"
+                            android:background="@color/white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/dp12"
+                            android:background="@drawable/bg_recommend_home"
+                            android:gravity="center"
+                            android:text="附近商家"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/sp11" />
+
+                        <TextView
+                            android:id="@+id/tv_more_store"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="right|center_vertical"
+                            android:layout_marginRight="@dimen/dp10"
+                            android:layout_marginTop="@dimen/dp5"
+                            android:drawableRight="@drawable/ico_right"
+                            android:gravity="center"
+                            android:text="更多" />
+                    </FrameLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_nearby_merchants"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/white"
+                        android:nestedScrollingEnabled="false" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </com.hmkj.taozhifu.view.SwipeRefreshView>
+</LinearLayout>

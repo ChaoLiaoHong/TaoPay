@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.hmkj.taozhifu.activity.NoticeListActivity">
+
+    <include layout="@layout/common_toolbar" />
+
+    <include layout="@layout/include_view_dp1" />
+   <LinearLayout
+       android:id="@+id/ll_on_null"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+       <com.hmkj.taozhifu.view.SwipeRefreshView
+           android:id="@+id/refresh"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+
+
+           <android.support.v7.widget.RecyclerView
+               android:id="@+id/rv_notice_list"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content" />
+
+
+       </com.hmkj.taozhifu.view.SwipeRefreshView>
+   </LinearLayout>
+
+
+    <include layout="@layout/include_null_state" />
+</LinearLayout>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="com.hmkj.taozhifu.activity.WithdrawDepositRecordActivity">
+
+    <include layout="@layout/common_toolbar" />
+
+    <com.hmkj.taozhifu.view.SwipeRefreshView
+        android:id="@+id/srv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/record_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
+    </com.hmkj.taozhifu.view.SwipeRefreshView>
+
+
+    <include layout="@layout/include_null_state" />
+</LinearLayout>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/include_view_da1_margin_left_dp10" />
+
+    <LinearLayout
+        android:id="@+id/ll_commodity_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp15"
+        android:layout_marginLeft="@dimen/dp10"
+        android:layout_marginRight="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp15"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_pic_commodity"
+            android:layout_width="@dimen/dp70"
+            android:layout_height="@dimen/dp70"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp15"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_commodity_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp5"
+                android:textColor="@color/j_333333"
+                android:textSize="@dimen/sp14" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/dp6"
+                android:paddingTop="@dimen/dp6">
+
+                <TextView
+                    android:id="@+id/tv_use_rule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_textview_blue_stork"
+                    android:paddingBottom="@dimen/dp3"
+                    android:paddingLeft="@dimen/dp6"
+                    android:paddingRight="@dimen/dp6"
+                    android:paddingTop="@dimen/dp3"
+                    android:textColor="@color/accent"
+                    android:textSize="@dimen/sp9" />
+
+                <TextView
+                    android:id="@+id/tv_use_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:drawablePadding="@dimen/dp10"
+                    android:drawableRight="@drawable/ico_right"
+                    android:textColor="@color/j_666666"
+                    android:textSize="@dimen/sp12" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="¥200"
+                    android:textColor="@color/j_ff4200"
+                    android:textSize="@dimen/sp14" />
+
+                <TextView
+                    android:id="@+id/tv_ticket"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp5"
+                    android:layout_toRightOf="@id/tv_money"
+                    android:background="@drawable/ico_box_price"
+                    android:padding="@dimen/dp5"
+                    android:textColor="@color/j_666666"
+                    android:textSize="@dimen/sp10" />
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

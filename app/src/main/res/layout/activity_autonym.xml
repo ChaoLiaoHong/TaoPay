@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/action_bar" />
+
+    <include layout="@layout/common_horizontal_line_taodian" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/navpage"
+        android:orientation="horizontal"
+        android:padding="@dimen/sp15">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp10"
+            android:src="@drawable/ico_tips" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/real_name_hint" />
+
+    </LinearLayout>
+    <!--输入验证码-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.hmkj.taozhifu.view.emoji.NOPasteEditText
+                android:id="@+id/real_Name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignBottom="@+id/view"
+                android:background="@color/white"
+                android:hint="@string/input_name"
+                android:maxLength="11"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/dp15"
+                android:textColor="@color/j_cccccc"
+                android:textSize="@dimen/sp14" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/mSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp21.5"
+        android:layout_marginRight="@dimen/dp21.5"
+        android:layout_marginTop="@dimen/dp30"
+        android:background="@drawable/btn_login_bg"
+        android:text="@string/complete"
+        android:textColor="@color/white" />
+</LinearLayout>

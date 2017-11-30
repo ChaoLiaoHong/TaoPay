@@ -1,0 +1,54 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_content"
+    android:layout_width="125dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/home_pro_recommend_bg"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_pro_pic"
+        android:layout_width="@dimen/dp125"
+        android:layout_height="@dimen/dp125"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/tv_pro_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp10"
+        android:layout_marginRight="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp10"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:lines="1"
+        android:text="wedssczxczxczxdczxczxc"
+        android:textColor="#333333"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp10"
+        android:layout_marginLeft="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp3"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_pro_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/j_ff4200"
+            android:textSize="@dimen/sp13" />
+
+        <TextView
+            android:id="@+id/tv_old_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp10"
+            android:textSize="@dimen/sp12" />
+
+    </LinearLayout>
+</LinearLayout>
+
+

@@ -1,0 +1,3 @@
+# Referenced at F:\work\TaoPay\app\build\intermediates\manifests\full\debug\AndroidManifest.xml:46
+-keep class com.hmkj.taozhifu.MyApp { <init>(...); }
+

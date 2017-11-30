@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <include layout="@layout/action_bar_me" />
+
+    <!--原来的刷新控件-->
+    <com.hmkj.taozhifu.view.SwipeRefreshView
+        android:id="@+id/mRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:tr_head_height="@dimen/dp70">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <!--个人中心-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp180"
+                    android:background="@drawable/bg_me"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp20">
+
+                        <TextView
+                            android:id="@+id/mClick_Upgrade"
+                            android:layout_width="@dimen/dp60"
+                            android:layout_height="@dimen/dp20"
+                            android:layout_centerInParent="true"
+                            android:layout_marginRight="@dimen/dp20"
+                            android:layout_toLeftOf="@+id/mHeadly"
+                            android:background="@drawable/btn_me_bg"
+                            android:gravity="center"
+                            android:text="@string/click_upgrade"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/sp10" />
+
+                        <FrameLayout
+                            android:id="@+id/mHeadly"
+                            android:layout_width="@dimen/dp100"
+                            android:layout_height="@dimen/dp100"
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <com.hmkj.taozhifu.view.BoderCircleImageView
+                                android:id="@+id/mHead"
+                                android:layout_width="@dimen/dp80"
+                                android:layout_height="@dimen/dp80"
+                                android:layout_gravity="center"
+                                android:src="@drawable/img_head_default" />
+
+                            <TextView
+                                android:id="@+id/vip_Grade"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:background="@drawable/btn_me_vip_bg"
+                                android:gravity="center_horizontal"
+                                android:paddingLeft="8dp"
+                                android:paddingRight="8dp"
+                                android:text="普通"
+                                android:textColor="@color/j_eb1919"
+                                android:textSize="@dimen/sp14" />
+                        </FrameLayout>
+
+
+                        <TextView
+                            android:id="@+id/mInvite"
+                            android:layout_width="@dimen/dp60"
+                            android:layout_height="@dimen/dp20"
+                            android:layout_centerInParent="true"
+                            android:layout_marginLeft="@dimen/dp20"
+                            android:layout_toRightOf="@+id/mHeadly"
+                            android:background="@drawable/btn_me_bg"
+                            android:gravity="center"
+                            android:text="@string/invite_QRcode"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/sp10" />
+
+                        <TextView
+                            android:id="@+id/my_recommend"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:visibility="invisible" />
+                    </RelativeLayout>
+
+
+                    <TextView
+                        android:id="@+id/mPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/sp15" />
+                </LinearLayout>
+
+
+                <!--中部任务栏-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dp10">
+
+                    <LinearLayout
+                        android:id="@+id/mVoucher_ly"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/mVoucher"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/accent"
+                            android:textSize="@dimen/sp16" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dp5"
+                            android:text="@string/voucher"
+                            android:textColor="@color/weihei"
+                            android:textSize="@dimen/sp13" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="@dimen/dp0.5"
+                        android:layout_height="match_parent"
+                        android:background="@color/e6e6e6" />
+
+                    <LinearLayout
+                        android:id="@+id/mShopTicket_ly"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/shopVoucher"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/accent"
+                            android:textSize="@dimen/sp16" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dp5"
+                            android:text="@string/shop_ticket"
+                            android:textColor="@color/weihei"
+                            android:textSize="@dimen/sp13" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="@dimen/dp0.5"
+                        android:layout_height="match_parent"
+                        android:background="@color/e6e6e6" />
+
+                    <LinearLayout
+                        android:id="@+id/mCash_ly"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/mCash"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/accent"
+                            android:textSize="@dimen/sp16" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dp5"
+                            android:text="@string/cash"
+                            android:textColor="@color/weihei"
+                            android:textSize="@dimen/sp13" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp10"
+                    android:background="@color/e6e6e6" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/mContent_RC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never">
+
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+        </ScrollView>
+    </com.hmkj.taozhifu.view.SwipeRefreshView>
+</LinearLayout>

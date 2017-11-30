@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context="com.hmkj.taozhifu.activity.UserCommentsActivity">
+
+    <include layout="@layout/common_toolbar" />
+
+    <include layout="@layout/include_view_dp1" />
+
+    <com.hmkj.taozhifu.view.SwipeRefreshView
+        android:id="@+id/refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_comments_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.hmkj.taozhifu.view.SwipeRefreshView>
+</LinearLayout>

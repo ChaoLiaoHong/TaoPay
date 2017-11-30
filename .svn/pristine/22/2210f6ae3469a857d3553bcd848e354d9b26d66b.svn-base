@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/action_bar" />
+
+    <include layout="@layout/common_horizontal_line_taodian" />
+
+    <LinearLayout
+        android:id="@+id/head_ly"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp70.5"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp18"
+        android:paddingRight="@dimen/dp18">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/head_portrait"
+            android:textColor="@color/j_333333"
+            android:textSize="@dimen/sp15" />
+
+        <com.hmkj.taozhifu.view.BoderCircleImageView
+            android:id="@+id/mHead"
+            android:layout_width="@dimen/dp40"
+            android:layout_height="@dimen/dp40"
+            android:layout_marginRight="@dimen/dp8"
+            android:src="@drawable/img_head_default" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ico_right" />
+
+    </LinearLayout>
+
+    <include layout="@layout/common_horizontal_line_taodian" />
+
+    <LinearLayout
+        android:id="@+id/sex_ly"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp45"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp18"
+        android:paddingRight="@dimen/dp18">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sex"
+            android:textColor="@color/j_333333"
+            android:textSize="@dimen/sp15" />
+
+        <TextView
+            android:id="@+id/sex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp7.5"
+            android:src="@mipmap/ic_launcher"
+            android:textColor="@color/j_999999"
+            android:textSize="@dimen/sp15" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ico_right" />
+
+    </LinearLayout>
+
+    <include layout="@layout/common_horizontal_line_taodian" />
+
+    <LinearLayout
+        android:id="@+id/realName_ly"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp45"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp18"
+        android:paddingRight="@dimen/dp18">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/real_name"
+            android:textColor="@color/j_333333"
+            android:textSize="@dimen/sp15" />
+
+        <TextView
+            android:id="@+id/real_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp7.5"
+            android:src="@mipmap/ic_launcher"
+            android:text="@string/no_all"
+            android:textColor="@color/j_999999"
+            android:textSize="@dimen/sp15" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp10"
+        android:background="@color/e6e6e6" />
+
+    <LinearLayout
+        android:id="@+id/loginPwd_ly"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp45"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp18"
+        android:paddingRight="@dimen/dp18"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/login_pwd"
+            android:textColor="@color/j_333333"
+            android:textSize="@dimen/sp15" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ico_right" />
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/common_horizontal_line_taodian"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/payPwd_ly"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp45"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp18"
+        android:paddingRight="@dimen/dp18">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/pay_pwd"
+            android:textColor="@color/j_333333"
+            android:textSize="@dimen/sp15" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ico_right" />
+
+    </LinearLayout>
+
+</LinearLayout>

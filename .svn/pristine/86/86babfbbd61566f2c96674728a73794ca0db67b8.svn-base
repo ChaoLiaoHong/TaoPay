@@ -1,0 +1,691 @@
+package com.hmkj.taozhifu.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.google.gson.Gson;
+import com.hmkj.taozhifu.MyApp;
+import com.hmkj.taozhifu.R;
+import com.hmkj.taozhifu.base.BaseActivity;
+import com.hmkj.taozhifu.bean.AlipayBean;
+import com.hmkj.taozhifu.bean.EventBusEntity;
+import com.hmkj.taozhifu.bean.MyOrderBean;
+import com.hmkj.taozhifu.bean.ShopDetailedEntity;
+import com.hmkj.taozhifu.bean.WxZfEntity;
+import com.hmkj.taozhifu.holder.BannerHolder;
+import com.hmkj.taozhifu.http.CustomCallback;
+import com.hmkj.taozhifu.http.HttpConfig;
+import com.hmkj.taozhifu.mpresenter.APpresenter;
+import com.hmkj.taozhifu.mview.AmoyPointView;
+import com.hmkj.taozhifu.pay.PayFactory;
+import com.hmkj.taozhifu.pay.PayWay;
+import com.hmkj.taozhifu.utils.AppUtils;
+import com.hmkj.taozhifu.utils.CommonUtil;
+import com.hmkj.taozhifu.utils.GsonUtil;
+import com.hmkj.taozhifu.utils.LogUtil;
+import com.hmkj.taozhifu.utils.MD5Builder;
+import com.hmkj.taozhifu.utils.NumberDecimalUtils;
+import com.hmkj.taozhifu.utils.StatusBarUtil;
+import com.hmkj.taozhifu.utils.ToastUtil;
+import com.hmkj.taozhifu.view.PopupPayInputPwd;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.model.Response;
+import com.tencent.mm.sdk.modelpay.PayReq;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static com.hmkj.taozhifu.http.HttpConfig.getShopDetailByShopId;
+
+public class PayActivity extends BaseActivity implements AmoyPointView {
+
+    @BindView(R.id.top_btn_left)
+    Button topBtnLeft;
+    @BindView(R.id.top_title)
+    TextView topTitle;
+    @BindView(R.id.top_btn_right)
+    Button topBtnRight;
+    @BindView(R.id.top_iv_right)
+    ImageView topIvRight;
+    @BindView(R.id.topView)
+    LinearLayout topView;
+    @BindView(R.id.tv_1)
+    TextView tv1;
+    @BindView(R.id.tv_dy_balance)
+    TextView tvDyBalance;
+    @BindView(R.id.iv_1)
+    ImageView iv1;
+    @BindView(R.id.rl_1)
+    RelativeLayout rl1;
+    @BindView(R.id.tv_2)
+    TextView tv2;
+    @BindView(R.id.tv_sc_balance)
+    TextView tvScBalance;
+    @BindView(R.id.iv_2)
+    ImageView iv2;
+    @BindView(R.id.rl_2)
+    RelativeLayout rl2;
+    @BindView(R.id.tv_3)
+    TextView tv3;
+    @BindView(R.id.tv_xj_balance)
+    TextView tvXjBalance;
+    @BindView(R.id.iv_3)
+    ImageView iv3;
+    @BindView(R.id.rl_3)
+    RelativeLayout rl3;
+    @BindView(R.id.tv_4)
+    TextView tv4;
+    @BindView(R.id.tv_wx_balance)
+    TextView tvWxBalance;
+    @BindView(R.id.iv_4)
+    ImageView iv4;
+    @BindView(R.id.rl_4)
+    RelativeLayout rl4;
+    @BindView(R.id.tv_5)
+    TextView tv5;
+    @BindView(R.id.tv_zfb_balance)
+    TextView tvZfbBalance;
+    @BindView(R.id.iv_5)
+    ImageView iv5;
+    @BindView(R.id.rl_5)
+    RelativeLayout rl5;
+    @BindView(R.id.tv_true_pay_onClick)
+    TextView tvTruePayOnClick;
+    @BindView(R.id.edt_money)
+    EditText edtMoney;
+    @BindView(R.id.tv_shopName)
+    TextView tvShopName;
+    private Intent intent;
+    private String payWay = "DJPAY";//默认选着的是抵用券
+    private String shopId;
+    private WxZfEntity wxZfEntity;
+    private IWXAPI iwxapi;
+    private AlipayBean alipayBean;
+    private String money, orderNo;
+    private long createTime;
+    private PopupPayInputPwd mPopupPayInputPwd;
+    private APpresenter aPpresenter;
+    //标识是从订单进来的
+    private boolean isOrderPay;
+    private ShopDetailedEntity shopDetailedEntity;
+    private ShopDetailedEntity.DataBean shopData;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pay2);
+        ButterKnife.bind(this);
+        iwxapi = WXAPIFactory.createWXAPI(this, HttpConfig.APP_ID);
+        EventBus.getDefault().register(this);
+        /**
+         *  设置小数位数控制
+         */
+        NumberDecimalUtils.editText(edtMoney);
+    }
+
+    @Override
+    public void initData() {
+        getShopData();
+        aPpresenter.queryAP();
+    }
+
+    private void getShopData() {
+        this.show();
+        OkGo.<String>get(getShopDetailByShopId + shopId).execute(new CustomCallback(this) {
+            @Override
+            public void onSuccess(Response<String> response) {
+                super.onSuccess(response);
+                PayActivity.this.diss();
+                LogUtil.LogLong("店铺详情", response.body());
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    int code = jsonObject.getInt("code");
+                    String msg = jsonObject.getString("msg");
+                    if (code == 200) {
+                        shopDetailedEntity = GsonUtil.GsonToBean(response.body(), ShopDetailedEntity.class);
+                        if (shopDetailedEntity == null && shopDetailedEntity.getData() == null) {
+                            return;
+                        }
+                        shopData = shopDetailedEntity.getData();
+                        tvShopName.setText(shopData.getShopName());
+
+                    } else {
+                        ToastUtil.showToast(msg);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    //订单进来的订单数据
+    private MyOrderBean.OrderListBean.RecordsBean dataBean;
+
+    @Override
+    public void initView() {
+        intent = getIntent();
+        if (AppUtils.checkId(intent.getStringExtra("order_type"))) {
+            isOrderPay = true;
+            dataBean = (MyOrderBean.OrderListBean.RecordsBean) intent.getExtras().getSerializable("dataBean");
+            edtMoney.setText(dataBean.totalAmount + "");
+            edtMoney.clearFocus();
+            edtMoney.setFocusable(false);
+        }
+        StatusBarUtil.darkMode(this);
+        StatusBarUtil.setPaddingSmart(this, topView);
+        aPpresenter = new APpresenter(this, this);
+        topTitle.setText(R.string.tv_pay);
+        rl2.setVisibility(View.GONE);
+        rl1.setVisibility(View.GONE);
+        shopId = TextUtils.isEmpty(intent.getStringExtra("shopId")) ? String.valueOf(dataBean.shopId) : intent.getStringExtra("shopId");
+    }
+
+    @OnClick({R.id.top_btn_left, R.id.rl_1, R.id.rl_2, R.id.rl_3, R.id.rl_4, R.id.rl_5, R.id.tv_true_pay_onClick})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.top_btn_left:
+                finish();
+                break;
+            case R.id.rl_1:
+                onClickRL1();
+                break;
+            case R.id.rl_2:
+                onClickRL2();
+                break;
+            case R.id.rl_3:
+                onClickRL3();
+                break;
+            case R.id.rl_4:
+                onClickRL4();
+                break;
+            case R.id.rl_5:
+                onClickRL5();
+                break;
+            //确认支付
+            case R.id.tv_true_pay_onClick:
+                if (isOrderPay) {
+                    orderNo = dataBean.orderNo;
+                    money = edtMoney.getText().toString().trim();
+                    switchPayway();
+                } else {
+                    pay();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void pay() {
+        //生成订单
+        money = edtMoney.getText().toString().trim();
+        LogUtil.LogLong("店铺ID和票子", shopId + "________" + money);
+        if (TextUtils.isEmpty(money) && money.equals("")) {
+            ToastUtil.showToast("请输入支付金额");
+            return;
+        }
+        if (money.equals("0.00") || money.equals("0.0") || Double.parseDouble(money) <= 0) {
+            ToastUtil.showToast("暂时无法获取订单信息，请稍后再试");
+            return;
+        }
+        OkGo.<String>post(String.format(HttpConfig.offlineOrder, getMemberId()))
+                .params("memberId", getMemberId())
+                .params("shopId", shopId)
+                .params("totalAmount", money)
+                .execute(new CustomCallback(this) {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        super.onSuccess(response);
+                        LogUtil.LogLong("线下生成订单", response.body());
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            int code = jsonObject.getInt("code");
+                            String msg = jsonObject.getString("msg");
+                            if (code == 200) {
+                                JSONObject map = jsonObject.getJSONObject("map");
+                                orderNo = map.getString("orderNo");
+                                createTime = map.getLong("createTime");
+                                //调支付接口
+                                switchPayway();
+                            } else {
+                                ToastUtil.showToast(msg);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    private void switchPayway() {
+        if (payWay.equals("WXPAY")) {
+            sureWXPay(orderNo, money);
+        } else if (payWay.equals("ALIPAY")) {
+            sureALIPay(orderNo, money);
+        } else if (payWay.equals("DJPAY")) {
+            pwdInput(money, orderNo, payWay);
+        } else if (payWay.equals("XJPAY")) {
+            pwdInput(money, orderNo, payWay);
+        } else if (payWay.equals("SCPAY")) {
+            pwdInput(money, orderNo, payWay);
+        }
+    }
+
+    private void pwdInput(final String money, final String orderNo, String type) {
+        mPopupPayInputPwd = new PopupPayInputPwd(this, Double.parseDouble(money), null, new PopupPayInputPwd.OnSendListener() {
+            @Override
+            public void onSuccess(String str) {
+                if (payWay.equals("DJPAY")) {
+                    sureDJPay(orderNo, money, str);
+                } else if (payWay.equals("XJPAY")) {
+                    sureXJPay(orderNo, money, str);
+                } else {
+                    sureSCPay(orderNo, money, str);
+                }
+            }
+
+            @Override
+            public void onCancelClick() {
+                mPopupPayInputPwd.dismiss();
+            }
+        });
+        mPopupPayInputPwd.show();
+    }
+
+    //支付方式:商超券
+    private void sureSCPay(final String orderNo, final String money, String str) {
+        LogUtil.LogLong("现金支付");
+        String pass = "";
+        try {
+            pass = MD5Builder.getMD5(str);
+            LogUtil.LogLong("密码", pass);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        OkGo.<String>post(HttpConfig.initPay)
+                .params("memberId", getMemberId())
+                .params("orderNo", orderNo)
+                .params("amount", money)
+                .params("productInfo", "到店支付")
+                .params("payWay", payWay)
+                .params("payType", "SHOP")
+                .params("shopId", shopId)
+                .params("pass", pass)
+                .execute(new CustomCallback(this) {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        super.onSuccess(response);
+                        LogUtil.LogLong(response.body());
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            int code = jsonObject.getInt("code");
+                            String msg = jsonObject.getString("msg");
+                            LogUtil.LogLong("商店数据" + response.body());
+                            if (code == 200) {
+                                Intent intent1 = new Intent(PayActivity.this, PaySuccessActivity.class);
+                                intent1.putExtra("type", "shop");
+                                intent1.putExtra("price", money);
+                                intent1.putExtra("orderNo", orderNo);
+                                intent1.putExtra("shopName", shopData.getShopName());
+                                intent1.putExtra("createTime", createTime);
+                                intent1.putExtra("payWay", "商超券");
+                                startActivity(intent1);
+                                finish();
+                                mPopupPayInputPwd.dismiss();
+                            } else {
+                                ToastUtil.showToast(msg);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    //支付方式:现金
+    private void sureXJPay(final String orderNo, final String money, String pwd) {
+        LogUtil.LogLong("现金支付");
+        String pass = "";
+        try {
+            pass = MD5Builder.getMD5(pwd);
+            LogUtil.LogLong("密码", pass);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        OkGo.<String>post(HttpConfig.initPay)
+                .params("memberId", getMemberId())
+                .params("orderNo", orderNo)
+                .params("amount", money)
+                .params("productInfo", "到店支付")
+                .params("payWay", payWay)
+                .params("payType", "SHOP")
+                .params("shopId", shopId)
+                .params("pass", pass)
+                .execute(new CustomCallback(this) {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        super.onSuccess(response);
+                        LogUtil.LogLong(response.body());
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            int code = jsonObject.getInt("code");
+                            String msg = jsonObject.getString("msg");
+                            if (code == 200) {
+                                Intent intent1 = new Intent(PayActivity.this, PaySuccessActivity.class);
+                                intent1.putExtra("type", "shop");
+                                intent1.putExtra("price", money);
+                                intent1.putExtra("orderNo", orderNo);
+                                intent1.putExtra("shopName", shopData.getShopName());
+                                intent1.putExtra("createTime", createTime);
+                                intent1.putExtra("payWay", "现金");
+                                startActivity(intent1);
+                                finish();
+                                mPopupPayInputPwd.dismiss();
+                            } else {
+                                ToastUtil.showToast(msg);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    //支付方式:支付宝
+    private void sureALIPay(String orderNo, String money) {
+        OkGo.<String>post(HttpConfig.initPay)
+                .params("memberId", getMemberId())
+                .params("orderNo", orderNo)
+                .params("amount", money)
+                .params("productInfo", "到店支付")
+                .params("payWay", payWay)
+                .params("payType", "SHOP")
+                .params("shopId", shopId)
+                .execute(new CustomCallback(this) {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        super.onSuccess(response);
+                        LogUtil.LogLong(response.body());
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            int code = jsonObject.getInt("code");
+                            String msg = jsonObject.getString("msg");
+                            if (code == 200) {
+                                LogUtil.LogLong("支付宝支付", "进来了");
+                                alipayBean = new Gson().fromJson(response.body(), AlipayBean.class);
+                                if (alipayBean.code == 200) {
+                                    PayFactory.create(PayWay.ALIPAY, handler).pay(PayActivity.this, alipayBean.msg);
+                                }
+                            } else {
+                                ToastUtil.showToast(msg);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    //支付方式:微信
+    private void sureWXPay(String orderNo, String money) {
+        OkGo.<String>post(HttpConfig.initPay)
+                .params("memberId", getMemberId())
+                .params("orderNo", orderNo)
+                .params("amount", money)
+                .params("productInfo", "到店支付")
+                .params("payWay", payWay)
+                .params("payType", "SHOP")
+                .params("shopId", shopId)
+                .execute(new CustomCallback(this) {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        super.onSuccess(response);
+                        LogUtil.LogLong(response.body());
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            int code = jsonObject.getInt("code");
+                            String msg = jsonObject.getString("msg");
+                            if (code == 200) {
+                                wxZfEntity = new Gson().fromJson(response.body(), WxZfEntity.class);
+                                if (wxZfEntity.code == 200) {
+                                    LogUtil.LogLong("微信支付", "进来了");
+                                    wxPay();
+                                }
+                            } else {
+                                ToastUtil.showToast(msg);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    //支付方式:抵用券
+    private void sureDJPay(final String OrderNumber, final String money, String pwd) {
+        String pass = "";
+        try {
+            pass = MD5Builder.getMD5(pwd);
+            LogUtil.LogLong("密码", pass);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //支付方式:WXPAY/ALIPAY/其它待定
+        LogUtil.LogLong("抵用券", " 进来了没有");
+        OkGo.<String>post(HttpConfig.initPay)
+                .params("memberId", getMemberId())
+                .params("orderNo", OrderNumber)
+                .params("amount", money)
+                .params("productInfo", "到店支付")
+                .params("payWay", payWay)
+                .params("payType", "SHOP")
+                .params("shopId", shopId)
+                .params("pass", pass)
+                .execute(new CustomCallback(this) {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        super.onSuccess(response);
+                        LogUtil.LogLong("提交订单成功" + response.body());
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            int code = jsonObject.getInt("code");
+                            String msg = jsonObject.getString("msg");
+                            if (code == 200) {
+                                Intent intent1 = new Intent(PayActivity.this, PaySuccessActivity.class);
+                                intent1.putExtra("type", "shop");
+                                intent1.putExtra("price", money);
+                                intent1.putExtra("orderNo", orderNo);
+                                intent1.putExtra("shopName", shopData.getShopName());
+                                intent1.putExtra("createTime", createTime);
+                                intent1.putExtra("payWay", "抵用券");
+                                startActivity(intent1);
+                                finish();
+                                mPopupPayInputPwd.dismiss();
+                            } else if (code == 500) {
+                                ToastUtil.showToast(msg);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 调支付宝
+     */
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 100:
+                    //支付结果回调
+                    String message = msg.obj.toString();
+                    if (message.contains("支付结果待确认中")) {
+                        ToastUtil.showToast(message);
+                    } else if (message.contains("支付成功")) {
+                        org.greenrobot.eventbus.EventBus.getDefault().post(new EventBusEntity(5));
+                    } else {
+                        ToastUtil.showToast("支付失败");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    //微信支付
+    private void wxPay() {
+        LogUtil.LogLong("微信支付", "走没有");
+        if (isWXAppInstalledAndSupported() | AppUtils.isAvilible(MyApp.mContext, "com.tencent.mm")) {
+            if (wxZfEntity.code == 200) {
+                //微信支付
+                PayReq req = new PayReq();
+                req.appId = wxZfEntity.appid;
+                req.partnerId = wxZfEntity.partnerid;
+                req.prepayId = wxZfEntity.prepayid;
+                req.packageValue = wxZfEntity.packageX;
+                req.nonceStr = wxZfEntity.noncestr;
+                req.timeStamp = wxZfEntity.timestamp;
+                req.sign = wxZfEntity.sign;
+                req.extData = "app data";
+                iwxapi.sendReq(req);
+                //这里还需要做处理
+            } else {
+                ToastUtil.showToast(wxZfEntity.msg);
+            }
+        } else {
+            ToastUtil.showToast("微信支付不可用,请检查是否安装");
+        }
+    }
+
+    //判断手机是否安装了微信
+    private boolean isWXAppInstalledAndSupported() {
+        return iwxapi.isWXAppInstalled() && iwxapi.isWXAppSupportAPI();
+    }
+
+    //抵用券
+    private void onClickRL1() {
+        payWay = "DJPAY";
+        iv1.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_checked));
+        iv2.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv3.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv4.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv5.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+    }
+
+    //商超券
+    private void onClickRL2() {
+        payWay = "SCPAY";
+        iv1.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv2.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_checked));
+        iv3.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv4.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv5.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+    }
+
+    //现金
+    private void onClickRL3() {
+        payWay = "XJPAY";
+        iv1.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv2.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv3.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_checked));
+        iv4.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv5.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+    }
+
+    //微信支付
+    private void onClickRL4() {
+        payWay = "WXPAY";
+        iv1.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv2.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv3.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv4.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_checked));
+        iv5.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+    }
+
+    //支付宝支付
+    private void onClickRL5() {
+        payWay = "ALIPAY";
+        iv1.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv2.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv3.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv4.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_unchecked));
+        iv5.setImageDrawable(CommonUtil.getDrawable(R.drawable.ico_checked));
+    }
+
+    /**
+     * ------------------------------------------------------
+     *
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(EventBusEntity event) {
+        switch (event.getMsg()) {
+            case 100:
+                Intent i = new Intent(this, PaySuccessActivity.class);
+                i.putExtra("type", "shop");
+                i.putExtra("price", money);
+                i.putExtra("orderNo", orderNo);
+                i.putExtra("createTime", createTime);
+                i.putExtra("shopName", shopData.getShopName());
+                i.putExtra("payWay", "微信");
+                startActivity(i);
+                finish();
+                break;
+            case 5:
+                Intent intent1 = new Intent(this, PaySuccessActivity.class);
+                intent1.putExtra("type", "shop");
+                intent1.putExtra("price", money);
+                intent1.putExtra("orderNo", orderNo);
+                intent1.putExtra("shopName", shopData.getShopName());
+                intent1.putExtra("createTime", createTime);
+                intent1.putExtra("payWay", "支付宝");
+                startActivity(intent1);
+                finish();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void queryAPSuccess(int dot, int integral, double cashCoupon, double businessCoupon, double amount, int level, double goodsMoney, int mlevel) {
+        tvDyBalance.setText(String.format(CommonUtil.getString(R.string.tv_balance), String.valueOf(CommonUtil.Double2position(cashCoupon))));
+        tvXjBalance.setText(String.format(CommonUtil.getString(R.string.tv_balance), String.valueOf(CommonUtil.Double2position(amount)) + "+货款" + String.valueOf(CommonUtil.Double2position(goodsMoney))));
+        tvScBalance.setText(String.format(CommonUtil.getString(R.string.tv_balance), String.valueOf(CommonUtil.Double2position(businessCoupon))));
+    }
+}

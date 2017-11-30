@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ico_home_normal"
+        android:title="首页" />
+
+    <item
+        android:id="@+id/navigation_shop"
+        android:icon="@drawable/ico_classify_normal"
+        android:title="分类" />
+
+    <item
+        android:id="@+id/navigation_circle"
+        android:icon="@drawable/ico_taodian_normal"
+        android:title="淘点"/>
+    <item
+        android:id="@+id/navigation_me"
+        android:icon="@drawable/ico_me_normal"
+        android:title="我的"/>
+</menu>

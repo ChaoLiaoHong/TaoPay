@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hmkj.taozhifu"
+    android:versionCode="5"
+    android:versionName="1.0.4" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="25" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <!-- 请求访问使用照相设备 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 开启闪光灯权限 -->
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <meta-data
+        android:name="android.support.VERSION"
+        android:value="25.3.1" />
+
+    <application
+        android:name="com.hmkj.taozhifu.MyApp"
+        android:allowBackup="true"
+        android:icon="@drawable/logo_login"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/logo_login"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme" >
+        <activity android:name="com.hmkj.taozhifu.activity.MainActivity" />
+        <activity android:name="com.hmkj.taozhifu.permission.PermissionsActivity" />
+
+        <receiver android:name="com.hmkj.taozhifu.receiver.NetBroadCastReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.Net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name="com.hmkj.taozhifu.activity.MyOrderActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.WebActivity" />
+        <activity
+            android:name="com.hmkj.taozhifu.activity.LoginActivity"
+            android:launchMode="singleTop" />
+        <activity android:name="com.hmkj.taozhifu.activity.RegistActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.SettiingPwdActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.ShopListActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.CommodityDetailedInformationActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyWalletActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.SearchShoppingActivity" />
+        <activity
+            android:name="com.hmkj.taozhifu.activity.MyStorePublishProductActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+        <activity android:name="com.hmkj.taozhifu.activity.WithdrawDepositActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.TDTicketActivity" />
+
+        <!-- 百度地图 -->
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" />
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="7SbngUGLSCRawild2ZvDv1lAKrKeRDBA" />
+        <!-- 适配三星s8 -->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
+        <activity android:name="com.hmkj.taozhifu.activity.ShopDetailedInformationActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.UserCommentsActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.CollectionActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.ProductClassifyActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreSetupActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreProductActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreLogoffActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.ShareZXcodeActivity" />
+        <activity
+            android:name="com.hmkj.taozhifu.activity.PersonInfoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.hmkj.taozhifu.activity.NoticeDetailsActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.NoticeListActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreApplyActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreUploadLicenseActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.PayPwdActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.LoginPwdActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.AutonymActivity" />
+        <activity
+            android:name="com.hmkj.taozhifu.activity.SubmitOrderActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name="com.hmkj.taozhifu.activity.SettingActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MessageActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.PaySuccessActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.PayActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.TestExamineAndVerifyActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.SetPwdForgetActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.ForgetPwdActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreDiscountActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreExchangeOrderActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.PhotoActivity" />
+        <!-- 微信支付 -->
+        <activity
+            android:name="com.hmkj.taozhifu.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyStoreAccountPaidActivity" />
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity android:name="com.hmkj.taozhifu.activity.CaptureActivity" />
+        <activity android:name="com.hmkj.taozhifu.activity.MyOrderDetailActivity" />
+        <!-- 添加友盟appkey value不建议使用中文，小心乱码 -->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="59bf1e1cf43e4818560008d5" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="TaoPay" />
+
+        <!-- 分享的开始 -->
+        <!-- 微信分享 -->
+        <activity
+            android:name="com.hmkj.taozhifu.wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- QQ分享 -->
+        <activity
+            android:name="com.umeng.qq.tencent.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent1106127017" />
+            </intent-filter>
+        </activity>
+        <!-- 新浪微博 -->
+        <activity
+            android:name="com.hmkj.taozhifu.activity.WBShareActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.umeng.socialize.media.WBShareCallBackActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.sina.weibo.sdk.share.WbShareTransActivity"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.sina.weibo.sdk.action.ACTION_SDK_REQ_ACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.umeng.qq.tencent.AssistActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- 分享结束 -->
+        <activity android:name="com.hmkj.taozhifu.activity.AboutOurActivity" />
+        <!-- 视频播放 -->
+        <activity
+            android:name="com.hmkj.taozhifu.utils.webviewUtils.WebviewVideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name="com.hmkj.taozhifu.activity.LaunchActivity"
+            android:theme="@style/Theme.AppStartLoadTranslucent" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.hmkj.taozhifu.activity.WithdrawDepositRecordActivity" />
+        <activity
+            android:name="com.yanzhenjie.album.ui.AlbumActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/album_ChoiceActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|stateHidden" />
+        <activity
+            android:name="com.yanzhenjie.album.ui.GalleryActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/album_ChoiceActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|stateHidden" />
+        <activity
+            android:name="com.yanzhenjie.album.ui.GalleryAlbumActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/album_ChoiceActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|stateHidden" />
+        <activity
+            android:name="com.yanzhenjie.album.ui.CameraActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/album_TransparentActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|stateHidden" />
+
+        <provider
+            android:name="com.yanzhenjie.album.provider.CameraFileProvider"
+            android:authorities="com.hmkj.taozhifu.album.camera.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:multiprocess="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/album_camera_provider" />
+        </provider>
+
+        <activity
+            android:name="com.lzy.ninegrid.preview.ImagePreviewActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.uuzuche.lib_zxing.activity.CaptureActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.hmkj.taozhifu.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.darsh.multipleimageselect.activities.AlbumSelectActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/MultipleImageSelectTheme" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.darsh.multipleimageselect.activities.ImageSelectActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/MultipleImageSelectTheme" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

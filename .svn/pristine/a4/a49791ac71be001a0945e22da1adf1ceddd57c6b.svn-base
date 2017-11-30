@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/j_f6f6f6"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/toolbar"
+        style="@style/AppTheme.Toolbar"
+        android:elevation="@dimen/dp0"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp18"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/toolbar_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:singleLine="true"
+            android:text="上传"
+            android:textColor="@color/j_0088cd"
+            android:textSize="@dimen/sp16" />
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp10">
+
+        <TextView
+            style="@style/common_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="执照号码" />
+
+        <com.hmkj.taozhifu.view.emoji.NOPasteEditText
+            android:id="@+id/et_store_name"
+            style="@style/common_undertint_edittext_style"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp15"
+            android:layout_marginRight="@dimen/dp10"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:hint="请输入营业执照号或手机号"
+            android:lines="1"
+            android:maxLength="20" />
+
+        <ImageView
+            android:id="@+id/iv_delete_store_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ico_delete_input" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_select_product_main_img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp10">
+
+        <TextView
+            style="@style/common_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="营业执照" />
+
+        <ImageView
+            android:id="@+id/iv_select_main_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="@dimen/dp10"
+            android:src="@drawable/ico_right" />
+
+        <ImageView
+            android:id="@+id/iv_product_main_img"
+            android:layout_width="@dimen/dp50"
+            android:layout_height="@dimen/dp50"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp10"
+            android:layout_toLeftOf="@id/iv_select_main_pic"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_upload" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp15"
+        android:text="请上传营业执照或店铺申请表"
+        android:textColor="@color/j_cccccc"
+        android:textSize="@dimen/sp12" />
+</LinearLayout>

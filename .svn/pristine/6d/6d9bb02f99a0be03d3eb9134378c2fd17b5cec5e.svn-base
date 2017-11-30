@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/action_bar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp45"
+        android:layout_marginTop="@dimen/dp20"
+        android:text="@string/please_pay_pwd"
+        android:textColor="@color/j_666666"
+        android:textSize="@dimen/sp12" />
+
+    <com.hmkj.taozhifu.view.PswInputView
+        android:id="@+id/psw_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/dp45"
+        android:layout_marginRight="@dimen/dp45"
+        android:layout_marginTop="@dimen/dp20"
+        android:inputType="number"
+        app:count="6" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp20"
+        android:background="@color/e6e6e6" />
+    <!--输入验证码-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dp12"
+        android:paddingRight="@dimen/dp12">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/code_EditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignBottom="@+id/view"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:background="@color/white"
+                android:drawablePadding="@dimen/dp17"
+                android:hint="@string/input_code"
+                android:inputType="number"
+                android:maxLength="6"
+                android:maxLines="1"
+                android:textColor="@color/j_cccccc"
+                android:textSize="@dimen/sp14" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/mGain_Code"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/take_code"
+            android:textColor="@color/accent"
+            android:textSize="@dimen/sp11" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/mSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp21.5"
+        android:layout_marginRight="@dimen/dp21.5"
+        android:layout_marginTop="@dimen/dp30"
+        android:background="@drawable/btn_login_bg"
+        android:text="@string/save"
+        android:textColor="@color/white" />
+</LinearLayout>

@@ -1,0 +1,770 @@
+package com.hmkj.taozhifu.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.alibaba.sdk.android.oss.ClientException;
+import com.alibaba.sdk.android.oss.ServiceException;
+import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;
+import com.alibaba.sdk.android.oss.callback.OSSProgressCallback;
+import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;
+import com.alibaba.sdk.android.oss.model.DeleteObjectRequest;
+import com.alibaba.sdk.android.oss.model.DeleteObjectResult;
+import com.alibaba.sdk.android.oss.model.PutObjectRequest;
+import com.alibaba.sdk.android.oss.model.PutObjectResult;
+import com.baidu.location.LocationClient;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeOption;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.hmkj.taozhifu.MyApp;
+import com.hmkj.taozhifu.R;
+import com.hmkj.taozhifu.adapter.GridViewDeleteClickAdapter;
+import com.hmkj.taozhifu.base.BaseActivity;
+import com.hmkj.taozhifu.bean.AddressBeans;
+import com.hmkj.taozhifu.bean.EventBusEntity;
+import com.hmkj.taozhifu.bean.ShopDiscointListBean;
+import com.hmkj.taozhifu.http.CustomCallback;
+import com.hmkj.taozhifu.http.HttpConfig;
+import com.hmkj.taozhifu.myInterface.CommonStatu;
+import com.hmkj.taozhifu.myListener.LocationService;
+import com.hmkj.taozhifu.utils.AppUtils;
+import com.hmkj.taozhifu.utils.CommonUtil;
+import com.hmkj.taozhifu.utils.GlideUtils;
+import com.hmkj.taozhifu.utils.GsonUtil;
+import com.hmkj.taozhifu.utils.ImgCompressUtil;
+import com.hmkj.taozhifu.utils.LogUtil;
+import com.hmkj.taozhifu.utils.SharedPreferencesUtil;
+import com.hmkj.taozhifu.utils.StatusBarUtil;
+import com.hmkj.taozhifu.utils.ToastUtil;
+import com.hmkj.taozhifu.view.MyOneTextDialog;
+import com.hmkj.taozhifu.view.NoScrollGridView;
+import com.hmkj.taozhifu.view.ProtocolDialog;
+import com.hmkj.taozhifu.view.emoji.NOPasteEditText;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.HttpParams;
+import com.lzy.okgo.model.Response;
+import com.lzy.okgo.request.base.Request;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
+import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.AlbumFile;
+import com.yanzhenjie.album.AlbumListener;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static com.hmkj.taozhifu.MyApp.oss;
+import static com.hmkj.taozhifu.MyApp.testBucket;
+
+public class MyStoreApplyActivity extends BaseActivity implements MyOneTextDialog.DLonItemClickListener, GridViewDeleteClickAdapter.OnRecyclerViewItemClickListener, OnGetGeoCoderResultListener {
+
+    @BindView(R.id.toolbar_title)
+    TextView toolbarTitle;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.view)
+    View view;
+    @BindView(R.id.et_store_name)
+    NOPasteEditText etStoreName;
+    @BindView(R.id.iv_delete_store_name)
+    ImageView ivDeleteStoreName;
+    @BindView(R.id.et_store_phone)
+    NOPasteEditText etStorePhone;
+    @BindView(R.id.tv_address1)
+    TextView tvAddress1;
+    @BindView(R.id.tv_address2)
+    TextView tvAddress2;
+    @BindView(R.id.tv_address3)
+    TextView tvAddress3;
+    @BindView(R.id.et_store_address)
+    NOPasteEditText etStoreAddress;
+    @BindView(R.id.et_store_recommender_phone)
+    NOPasteEditText etStoreRecommenderPhone;
+    @BindView(R.id.tv_erchant_industry)
+    TextView tvErchantIndustry;
+    @BindView(R.id.tv_store_discount)
+    TextView tvStoreDiscount;
+    @BindView(R.id.tv_store_attestation)
+    TextView tvStoreAttestation;
+    @BindView(R.id.et_product_des)
+    NOPasteEditText etProductDes;
+    @BindView(R.id.iv_select_main_pic)
+    ImageView ivSelectMainPic;
+    @BindView(R.id.iv_product_main_img)
+    ImageView ivProductMainImg;
+    @BindView(R.id.rl_select_product_main_img)
+    RelativeLayout rlSelectProductMainImg;
+    @BindView(R.id.iv_select_pic)
+    ImageView ivSelectPic;
+    @BindView(R.id.gv_grid_view)
+    NoScrollGridView gvGridView;
+    @BindView(R.id.checkbox)
+    CheckBox checkbox;
+    @BindView(R.id.tv_protocol)
+    TextView tvProtocol;
+    @BindView(R.id.tv_submit_apply)
+    TextView tvSubmitApply;
+
+    private ShopDiscointListBean shopDiscointListBean;
+    int discountValue = -1;
+    ArrayList<AlbumFile> mainImgList = new ArrayList<>(); // 选择的门牌照，就一张
+    ArrayList<AlbumFile> imgList = new ArrayList<>();  //选择的商户环境图，好几张
+    GridViewDeleteClickAdapter gridViewDeleteClickAdapter;
+    String mainImgPath = ""; //主图只有一张，需要单独传，记录下来
+    String classId = ""; //选择的商户行业
+    String licenseImgPath = "";//上传执照返回
+    int store_attestation = -1; // 上传执照记录
+    String licenseNo = ""; // 营业执照编号/手机号
+    GeoCoder mSearch = null; // 百度定位搜索模块，也独立使用
+    public LocationClient mLocationClient = null;
+    double longitude = 0.0;//经度
+    double latitude = 0.0;//纬度
+    AddressBeans addressBeans = GsonUtil.GsonToBean(getJson(MyApp.mContext, "province.json"), AddressBeans.class);
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_store_apply);
+        ButterKnife.bind(this);
+    }
+
+    @Override
+    public void initData() {
+        // 定位初始化
+        EventBus.getDefault().register(this);
+        mLocationClient = new LocationClient(this);
+        mLocationClient.setLocOption(new LocationService(this).getDefaultLocationClientOption());
+        mLocationClient.start();
+        mSearch = GeoCoder.newInstance();
+        mSearch.setOnGetGeoCodeResultListener(MyStoreApplyActivity.this);
+        //玛德要什么经纬度,根据输入位置进行定位
+        etStoreAddress.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchLoc(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    @Override
+    public void initView() {
+        toolbar.setBackgroundColor(Color.WHITE);
+        initToolBar(toolbar, true, false, null, 0, R.drawable.ic_arrow_back_dark_24dp);
+        toolbarTitle.setText("店铺信息");
+        toolbarTitle.setTextColor(Color.BLACK);
+        StatusBarUtil.darkMode(this);
+        StatusBarUtil.setPaddingSmart(this, toolbar);
+        gridViewDeleteClickAdapter = new GridViewDeleteClickAdapter(this, imgList);
+        gridViewDeleteClickAdapter.setOnItemClickListener(this);
+        gvGridView.setAdapter(gridViewDeleteClickAdapter);
+        getPersimmions();
+    }
+
+    int type;
+
+    @OnClick({R.id.tv_address1, R.id.tv_address2, R.id.tv_address3, R.id.sao_sao, R.id.tv_store_attestation, R.id.tv_store_discount, R.id.iv_delete_store_name, R.id.tv_erchant_industry, R.id.rl_select_product_main_img, R.id.iv_select_pic, R.id.checkbox, R.id.tv_protocol, R.id.tv_submit_apply})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.iv_delete_store_name:
+                etStoreName.setText("");
+                break;
+            case R.id.tv_address1:
+                type = 1;
+                ArrayList<String> data = new ArrayList<>();
+                for (AddressBeans.AddressBean addres : addressBeans.address) {
+                    data.add(addres.name);
+                }
+                new MyOneTextDialog(this, data, MyStoreApplyActivity.this);
+                break;
+            case R.id.tv_address2:
+                type = 2;
+                ArrayList<String> data2 = new ArrayList<>();
+                for (AddressBeans.AddressBean addres : addressBeans.address) {
+                    if (TextUtils.equals(addres.name, getText(tvAddress1))) {
+                        for (AddressBeans.AddressBean.CityBean cityBean : addres.city) {
+                            data2.add(cityBean.name);
+                        }
+                        new MyOneTextDialog(this, data2, MyStoreApplyActivity.this);
+                    }
+                }
+                break;
+            case R.id.tv_address3:
+                type = 3;
+                for (AddressBeans.AddressBean addres : addressBeans.address) {
+                    if (TextUtils.equals(addres.name, getText(tvAddress1))) {
+                        for (AddressBeans.AddressBean.CityBean cityBean : addres.city) {
+                            if (TextUtils.equals(cityBean.name, getText(tvAddress2)))
+                                new MyOneTextDialog(this, cityBean.area, MyStoreApplyActivity.this);
+                        }
+                    }
+                }
+                break;
+            case R.id.sao_sao:
+                Intent intent = new Intent(this, CaptureActivity.class);
+                startActivityForResult(intent, CommonStatu.REQUEST_CODE3);
+                break;
+            case R.id.tv_erchant_industry:
+                startActivityForResult(new Intent(this, ProductClassifyActivity.class), CommonStatu.REQUEST_CODE2);
+                break;
+            case R.id.tv_store_discount:
+                type = 4;
+                getShopDiscountList();
+                break;
+            case R.id.tv_store_attestation:
+                startActivityForResult(new Intent(this, MyStoreUploadLicenseActivity.class), CommonStatu.REQUEST_CODE1);
+                break;
+            case R.id.rl_select_product_main_img:
+                selectMainPic();
+                break;
+            case R.id.iv_select_pic:
+                selectPic();
+                break;
+            case R.id.checkbox:
+                break;
+            case R.id.tv_protocol:
+                new ProtocolDialog(this, CommonUtil.getString(R.string.Merchant_registration_title), CommonUtil.getString(R.string.Merchant_registration_content));
+                break;
+            case R.id.tv_submit_apply:
+                tvSubmitApply.setEnabled(false);
+//                if (AppUtils.isFastClick()) {
+//
+//                    CommonUtil.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            tvSubmitApply.setEnabled(true);
+//                        }
+//                    }, 500);
+//
+//                }
+                check();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void check() {
+        if (!isNetConnect()) {
+            return;
+        }
+        if (!AppUtils.checkId(etStoreName.getText().toString().trim())) {
+            ToastUtil.showToast("请输入店铺名称");
+            return;
+        }
+        if (!AppUtils.checkId(etStorePhone.getText().toString().trim())) {
+            ToastUtil.showToast("请输入店铺电话");
+            return;
+        }
+        if (!AppUtils.checkId(getText(tvAddress3))) {
+            ToastUtil.showToast("请选择地址");
+            return;
+        }
+        if (!AppUtils.checkId(etStoreAddress.getText().toString().trim())) {
+            ToastUtil.showToast("请输入店铺地址");
+            return;
+        }
+        if (longitude == 0.0 || latitude == 0.0) {
+            ToastUtil.showToast("定位失败,请输入正确店铺地址");
+            return;
+        }
+        if (!AppUtils.checkId(etStoreRecommenderPhone.getText().toString().trim())) {
+            ToastUtil.showToast("请输入邀请码");
+            return;
+        }
+        if (!AppUtils.checkId(tvErchantIndustry.getText().toString().trim())) {
+            ToastUtil.showToast("请选择商户行业");
+            return;
+        }
+        if (!AppUtils.checkId(tvStoreDiscount.getText().toString().trim()) || discountValue == -1) {
+            ToastUtil.showToast("请选择店铺折扣");
+            return;
+        }
+        if (!AppUtils.checkId(tvStoreAttestation.getText().toString().trim()) || store_attestation != 0) {
+            ToastUtil.showToast("请上传店铺认证");
+            return;
+        }
+        //非必传
+//        if (!AppUtils.checkId(etProductDes.getText().toString().trim())) {
+//            ToastUtil.showToast("请上传店铺介绍");
+//            return;
+//        }
+        if (ivProductMainImg.getDrawable().getCurrent().getConstantState() == getResources().getDrawable(R.drawable.img_upload).getConstantState()) {
+            ToastUtil.showToast("请选择门牌照");
+            return;
+        }
+        if (!checkbox.isChecked()) {
+            ToastUtil.showToast("请勾选商户协议");
+            return;
+        }
+        uploadImg();
+    }
+
+    int mainImgListSize = 0;  // 记录选中主图几张
+    int environmentListSize = 0;    //  记录选中的商户环境图几张
+    int uploadSize = 0; //记录上传aliyun 几张
+    ArrayList<String> upSuccessImgs; //记录aliyun 上传成功图片路径
+    ArrayList<String> names; // 记录选中的图片重新给的名字
+
+    private void uploadImg() {
+        show(false, false);
+        tvSubmitApply.setClickable(false);
+        uploadSize = 0;
+        names = new ArrayList<>();
+        upSuccessImgs = new ArrayList<>();
+        //先上传主图
+        String mainImgName = System.currentTimeMillis() + "main";
+        names.add(mainImgName);
+        beginupload(mainImgName, CommonUtil.bitmap2Bytes(ImgCompressUtil.getimage(mainImgPath)));
+        //环境图
+        for (AlbumFile albumFile : imgList) {
+            String name = System.currentTimeMillis() + "";
+            if (!names.contains(name))
+                names.add(name);
+            beginupload(name, CommonUtil.bitmap2Bytes(ImgCompressUtil.getimage(albumFile.getPath())));
+        }
+    }
+
+    private void checkImg() {
+        LogUtil.LogLong(mainImgListSize + environmentListSize + "  --  " + uploadSize);
+        if (mainImgListSize + environmentListSize > uploadSize) {
+            ToastUtil.showToast("--- 请等待图片上传 ---");
+            return;
+        }
+        diss();
+        publish();
+    }
+
+    /**
+     * 图都传完了，现在传给后台
+     */
+    private void publish() {
+        String mainImgPath = "";
+        StringBuilder shopEnvironmentImg = new StringBuilder();
+        for (String upSuccessImg : upSuccessImgs) {
+            if (upSuccessImg.endsWith("main.png")) mainImgPath = upSuccessImg;
+            else shopEnvironmentImg.append(upSuccessImg + ",");
+        }
+        LogUtil.LogLong("mainImgPath -- " + mainImgPath);
+        if (upSuccessImgs.size() > 1 && shopEnvironmentImg.length() > 0)
+            LogUtil.LogLong("e_img -- " + shopEnvironmentImg.toString().substring(0, shopEnvironmentImg.length() - 1));
+//        HashMap<String,String>
+        LogUtil.LogLong("OkGoHead -- " + OkGo.getInstance().getCommonHeaders().toString());
+        HttpParams params = new HttpParams();
+        params.put("shopName", etStoreName.getText().toString().trim());
+        params.put("shopPhone", etStorePhone.getText().toString().trim());
+        params.put("shopAddress", getText(tvAddress1) + getText(tvAddress2) + getText(tvAddress3) + getText(etStoreAddress));
+        params.put("referrerCode", etStoreRecommenderPhone.getText().toString().trim());
+        params.put("classId", classId);
+        params.put("shopDiscount", discountValue);
+        params.put("shopSignage", mainImgPath);
+        params.put("memberId", (Long) SharedPreferencesUtil.get(this, "memberId", 0L));
+        params.put("businessLicense", licenseImgPath);
+        params.put("licenseNo", licenseNo);
+        params.put("merchantsDeal", "https://www.baidu.com/");
+        params.put("longitude", longitude);
+        params.put("latitude", latitude);
+        if (upSuccessImgs.size() > 1 && shopEnvironmentImg.length() > 0)
+            params.put("shopEnvironmentImg", shopEnvironmentImg.toString().substring(0, shopEnvironmentImg.length() - 1));
+        if (AppUtils.checkId(etProductDes.getText().toString()))
+            params.put("shopIntroduce", etProductDes.getText().toString().trim());
+        LogUtil.LogLong(" -- 申请店铺传的参数 -- " + params.toString());
+        OkGo.<String>post(HttpConfig.proShop).params(params)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onStart(Request<String, ? extends Request> request) {
+                        super.onStart(request);
+                        tvSubmitApply.setClickable(true);
+                        show(false, false);
+                    }
+
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        LogUtil.LogLong("申请店铺 -- " + response.body());
+                        if (checkHttpCode(response.body())) {
+                            ToastUtil.showToast("申请成功,请等待审核");
+                            setResult(CommonStatu.OK);
+                            tvSubmitApply.setEnabled(true);
+                            MyStoreApplyActivity.this.finish();
+                        } else {
+                            deleteAliImgs();
+                            ToastUtil.showToast(getHttpMsg(response.body()));
+                            tvSubmitApply.setEnabled(true);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        deleteAliImgs();
+                        tvSubmitApply.setEnabled(true);
+                        ToastUtil.showToast(AppUtils.Err(response.getException()));
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        super.onFinish();
+                        diss();
+                        tvSubmitApply.setEnabled(true);
+                    }
+                });
+    }
+
+    public void beginupload(final String name, byte[] bytes) {
+        // 构造上传请求
+        PutObjectRequest put = new PutObjectRequest(testBucket, "appdata/" + name + ".png", bytes);
+
+        // 异步上传时可以设置进度回调
+        put.setProgressCallback(new OSSProgressCallback<PutObjectRequest>() {
+            @Override
+            public void onProgress(PutObjectRequest request, long currentSize, long totalSize) {
+                Log.e("PutObject", "currentSize: " + currentSize + " totalSize: " + totalSize);
+            }
+        });
+
+        OSSAsyncTask task = oss.asyncPutObject(put, new OSSCompletedCallback<PutObjectRequest, PutObjectResult>() {
+            @Override
+            public void onSuccess(PutObjectRequest request, PutObjectResult result) {
+                uploadSize = uploadSize + 1;
+                Log.e("PutObject", "UploadSuccess");
+                Log.e("ETag", result.getETag());
+                Log.e("getStatusCode", result.getStatusCode() + "");
+                Log.e("RequestId", result.getRequestId());
+                if (!upSuccessImgs.contains(oss.presignPublicObjectURL(testBucket, "appdata/" + name + ".png")))
+                    upSuccessImgs.add(oss.presignPublicObjectURL(testBucket, "appdata/" + name + ".png"));
+                LogUtil.LogLong("ali_path -- " + oss.presignPublicObjectURL(testBucket, "appdata/" + name + ".png"));
+
+                checkImg();
+            }
+
+            @Override
+            public void onFailure(PutObjectRequest request, ClientException clientExcepion, ServiceException serviceException) {
+                uploadSize = uploadSize + 1;
+                // 请求异常
+                if (clientExcepion != null) {
+                    // 本地异常如网络异常等
+                    clientExcepion.printStackTrace();
+                }
+                if (serviceException != null) {
+                    // 服务异常
+                    Log.e("ErrorCode", serviceException.getErrorCode());
+                    Log.e("RequestId", serviceException.getRequestId());
+                    Log.e("HostId", serviceException.getHostId());
+                    Log.e("RawMessage", serviceException.getRawMessage());
+                }
+                checkImg();
+            }
+        });
+    }
+
+    private void deleteAliImgs() {
+        for (String name : names) {
+            deleUpImg(name);
+        }
+    }
+
+    private void deleUpImg(String name) {//如果上传图片到阿里云成功而本地失败
+        LogUtil.LogLong(" -- 删除图片进来了 -- ");
+        // 创建删除请求
+        DeleteObjectRequest delete = new DeleteObjectRequest(MyApp.testBucket, "appdata/" + name + ".png");
+        // 异步删除
+        OSSAsyncTask deleteTask = oss.asyncDeleteObject(delete, new OSSCompletedCallback<DeleteObjectRequest, DeleteObjectResult>() {
+            @Override
+            public void onSuccess(DeleteObjectRequest request, DeleteObjectResult result) {
+                LogUtil.LogLong(" -- 删除图片成功-- ");
+            }
+
+            @Override
+            public void onFailure(DeleteObjectRequest request, ClientException clientExcepion, ServiceException serviceException) {
+                LogUtil.LogLong(" -- 删除图片失败 -- ");
+                // 请求异常
+                if (clientExcepion != null) {
+                    // 本地异常如网络异常等
+                    clientExcepion.printStackTrace();
+                }
+                if (serviceException != null) {
+                    // 服务异常
+                    Log.e("ErrorCode", serviceException.getErrorCode());
+                    Log.e("RequestId", serviceException.getRequestId());
+                    Log.e("HostId", serviceException.getHostId());
+                    Log.e("RawMessage", serviceException.getRawMessage());
+                }
+            }
+
+        });
+    }
+
+    private void selectMainPic() {
+        Album.image(this) // 选择图片。
+                .multipleChoice()
+                .requestCode(200)
+                .camera(true)
+                .columnCount(3)
+                .selectCount(1)
+                .checkedList(mainImgList)
+                .listener(new AlbumListener<ArrayList<AlbumFile>>() {
+                    @Override
+                    public void onAlbumResult(int requestCode, @NonNull ArrayList<AlbumFile> result) {
+                        if (result != null && result.size() > 0) {
+                            GlideUtils.loadImage(MyStoreApplyActivity.this, result.get(0).getPath(), ivProductMainImg);
+                            mainImgListSize = result.size();
+                            mainImgPath = result.get(0).getPath();
+                        }
+                    }
+
+                    @Override
+                    public void onAlbumCancel(int requestCode) {
+
+                    }
+                })
+                .start();
+    }
+
+    private void selectPic() {
+        Album.image(this) // 选择图片。
+                .multipleChoice()
+                .requestCode(200)
+                .camera(true)
+                .columnCount(3)
+                .selectCount(5)
+                .checkedList(imgList)
+                .listener(new AlbumListener<ArrayList<AlbumFile>>() {
+                    @Override
+                    public void onAlbumResult(int requestCode, @NonNull ArrayList<AlbumFile> result) {
+                        if (result != null && result.size() > 0) {
+                            gridViewDeleteClickAdapter.setData(imgList = result);
+                            environmentListSize = result.size();
+                        }
+                    }
+
+                    @Override
+                    public void onAlbumCancel(int requestCode) {
+
+                    }
+                })
+                .start();
+    }
+
+    /**
+     * 删除图片
+     *
+     * @param view
+     * @param position
+     */
+    @Override
+    public void onItemClick(View view, int position) {
+        imgList.remove(position);
+        gridViewDeleteClickAdapter.setData(imgList);
+        environmentListSize = imgList.size();//删除了图片,重新计数
+        if (upSuccessImgs != null) {
+            upSuccessImgs.clear();
+        }
+    }
+
+    private void getShopDiscountList() {
+        OkGo.<String>get(HttpConfig.getShopDiscountList).execute(new CustomCallback(this) {
+            @Override
+            public void onSuccess(Response<String> response) {
+                super.onSuccess(response);
+                if (checkHttpCode(response.body())) {
+                    shopDiscointListBean = GsonUtil.GsonToBean(response.body(), ShopDiscointListBean.class);
+                    if (shopDiscointListBean != null && shopDiscointListBean.data != null) {
+                        ArrayList<String> data = new ArrayList<String>();
+                        for (ShopDiscointListBean.DataBean dataBean : shopDiscointListBean.data) {
+                            data.add(dataBean.discountName);
+                        }
+                        new MyOneTextDialog(MyStoreApplyActivity.this, data, MyStoreApplyActivity.this);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
+        //认证
+        if (requestCode == CommonStatu.REQUEST_CODE1 && resultCode == CommonStatu.OK) {
+            store_attestation = 0;
+            licenseImgPath = data.getStringExtra("licenseImgPath");
+            LogUtil.LogLong("认证图 -- " + licenseImgPath);
+            licenseNo = data.getStringExtra("licenseNo");
+            tvStoreAttestation.setText("已上传");
+        }
+        //行业
+        if (requestCode == CommonStatu.REQUEST_CODE2 && resultCode == CommonStatu.OK) {
+            tvErchantIndustry.setText(data.getStringExtra("name"));
+            this.classId = data.getStringExtra("classId");
+        }
+        if (requestCode == CommonStatu.REQUEST_CODE3 && resultCode == CommonStatu.REQUEST_CODE1) {
+            //处理扫描结果（在界面上显示）
+            Bundle bundle = data.getExtras();
+            if (bundle == null) {
+                return;
+            }
+            if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_SUCCESS) {
+                String result = bundle.getString(CodeUtils.RESULT_STRING);
+                Uri uri = Uri.parse(result);
+                String code = uri.getQueryParameter("code");
+                etStoreRecommenderPhone.setText(code);
+            } else if (bundle.getInt(CodeUtils.RESULT_TYPE) == CodeUtils.RESULT_FAILED) {
+                ToastUtil.showToast("解析二维码失败");
+            }
+
+        }
+
+    }
+
+    /**
+     * 弹出的dialog条目点击
+     *
+     * @param adapter
+     * @param view
+     * @param position
+     */
+    @Override
+    public void DLonItemClick(BaseQuickAdapter adapter, View view, int position) {
+        if (type == 1) {
+            tvAddress1.setText(getText((TextView) view));
+            tvAddress2.setText(null);
+            tvAddress2.setHint("请选择市");
+            tvAddress3.setText(null);
+            tvAddress3.setHint("请选择区");
+        } else if (type == 2) {
+            tvAddress2.setText(getText((TextView) view));
+            tvAddress3.setText(null);
+            tvAddress3.setHint("请选择区");
+        } else if (type == 3) {
+            tvAddress3.setText(getText((TextView) view));
+            searchLoc(getText(tvAddress1) + getText(tvAddress2) + getText(tvAddress3) + getText(etStoreAddress));
+        } else {
+            for (ShopDiscointListBean.DataBean dataBean : shopDiscointListBean.data) {
+                if (TextUtils.equals(((TextView) view).getText().toString(), dataBean.discountName)) {
+                    ToastUtil.showToast(dataBean.discountName);
+                    tvStoreDiscount.setText(dataBean.discountName);
+                    discountValue = dataBean.discountValue;
+                }
+            }
+        }
+    }
+
+    /**
+     * 发起地址搜索
+     */
+    public void searchLoc(String s) {
+        LogUtil.LogLong("地址 -- " + s);
+        // Geo搜索
+        if (AppUtils.checkId(s)) {
+            mSearch.geocode(new GeoCodeOption().city("").address(s));
+        }
+    }
+
+    /**
+     * 根据输入位置进行定位,返回结果
+     *
+     * @param result
+     */
+    @Override
+    public void onGetGeoCodeResult(GeoCodeResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            LogUtil.LogLong("抱歉，未能成功定位");
+            return;
+        }
+        longitude = result.getLocation().longitude;
+        latitude = result.getLocation().latitude;
+        LogUtil.LogLong("longitude - " + longitude + " -- longitude - " + latitude);
+    }
+
+    @Override
+    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        // 退出时销毁定位
+        mLocationClient.stop();
+        mSearch.destroy();
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(EventBusEntity event) {
+        switch (event.getMsg()) {
+            case 88:
+                String type = (String) SharedPreferencesUtil.get(this, "type_sao", "");
+                if (type.equals("2")) {
+                    String ZXcode = (String) SharedPreferencesUtil.get(this, "imgZxCode", "");
+                    if (TextUtils.isEmpty(ZXcode) || TextUtils.equals(ZXcode, "")) {
+                        return;
+                    }
+                    LogUtil.LogLong("二维码" + ZXcode);
+                    Uri uri = Uri.parse(ZXcode);
+                    String code = uri.getQueryParameter("code");
+                    etStoreRecommenderPhone.setText(code);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public String getJson(Context context, String fileName) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            AssetManager assetManager = context.getAssets();
+            BufferedReader bf = new BufferedReader(new InputStreamReader(
+                    assetManager.open(fileName)));
+            String line;
+            while ((line = bf.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
+    }
+}

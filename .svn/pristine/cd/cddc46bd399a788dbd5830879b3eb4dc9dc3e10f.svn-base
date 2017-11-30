@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_home_title"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimary"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:weightSum="10">
+
+    <TextView
+        android:id="@+id/tv_title_address"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:drawablePadding="@dimen/dp5"
+        android:gravity="center"
+        android:paddingLeft="@dimen/dp12"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/fragment_home_title_search"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dp30"
+        android:layout_marginBottom="@dimen/dp10"
+        android:layout_marginLeft="@dimen/dp15"
+        android:layout_marginTop="@dimen/dp10"
+        android:layout_weight="7"
+        android:background="@drawable/fragment_home_title_background"
+        android:drawableLeft="@drawable/ico_search_home"
+        android:drawablePadding="@dimen/dp5"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:paddingBottom="@dimen/dp5"
+        android:paddingLeft="@dimen/dp10"
+        android:paddingTop="@dimen/dp5"
+        android:text="请输入商家名称"
+        android:textColor="@color/white" />
+</LinearLayout>
