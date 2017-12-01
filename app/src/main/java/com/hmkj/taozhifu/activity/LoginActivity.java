@@ -113,7 +113,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
                     ToastUtil.showToast(getString(R.string.input_phone));
                     return;
                 }
-                OkGo.<String>post(HttpConfig.GET_CODE)
+                OkGo.<String>post(HttpConfig.GETSMS)
                         .cacheMode(CacheMode.NO_CACHE)
                         .params("phone", phone)
                         .params("type", "2")

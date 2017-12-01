@@ -41,11 +41,11 @@ public class HttpConfig {
     /**
      * 首页轮播图
      */
-    public static final String getAdver = WIP + "/api/pro/adver/getAdver";
+    public static final String getAdver = WIP + "api/pro/adver/getAdver";
     /**
      * 首页按钮
      */
-    public static final String indexButton = WIP + "/api/pro/indexButton/";
+    public static final String indexButton = WIP + "api/pro/indexButton/";
     /**
      * 首页公告
      */
@@ -179,9 +179,10 @@ public class HttpConfig {
     /**
      * 忘记密码验证码匹配
      */
-    public static final String ISTRUE_CODE_FORGET = WIP + "/api/sysMember/forgotPasswordCode";
-    public static final String FORGET_PWD_SET = WIP + "/api/sysMember/forgotPassword";
-    public static final String GET_CODE = WIP + "/api/sysMember/getSmsverification";
+    public static final String ISTRUE_CODE_FORGET = WIP + "api/sysMember/forgotPasswordCode";
+    public static final String FORGET_PWD_SET = WIP + "api/sysMember/forgotPassword";
+    public static final String GET_CODE = WIP + "api/sysMember/getSmsverification";
+    public static final String GETSMS = WIP + "api/sysMember/getSms";
     /**
      * 商品生成订单
      */
@@ -258,7 +259,7 @@ public class HttpConfig {
     /**
      * 聚合支付的二维码地址
      */
-    public static final String getCode = WIP+"api/qrpay/toQrPay?shopId=%s";
+    public static final String getCode = WIP + "api/qrpay/toQrPay?shopId=%s";
     /**
      * 验证码登录
      */

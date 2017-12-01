@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Thu Nov 30 14:31:39 CST 2017
+#Fri Dec 01 14:52:54 CST 2017
 2.base=F\:\\work\\TaoPay\\app\\build\\intermediates\\transforms\\stripDebugSymbol\\release\\0
 5.set=NATIVE_RESOURCE
 0.path=classes.dex
